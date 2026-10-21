@@ -76,6 +76,9 @@
     <section class="faq-section calculator-faq"><p class="eyebrow">COMMON QUESTIONS</p><h2>About {{ calc.shortTitle.toLowerCase() }} estimates</h2>
       <div class="faq-list">@for (faq of calc.faqs; track faq.question) {<details><summary>{{ faq.question }}</summary><p>{{ faq.answer }}</p></details>}</div>
     </section>
+    @if (guideSlug(calc.slug); as guide) {
+      <p class="guide-callout">Want to understand the assumptions? <a [routerLink]="['/guides', guide]">Read the {{ calc.shortTitle.toLowerCase() }} estimating guide →</a></p>
+    }
     <section class="related-section"><div><p class="eyebrow">KEEP PLANNING</p><h2>Related calculators</h2></div><div class="related-links">@for (related of relatedCalculators(calc.slug); track related.slug) {<a [routerLink]="['/calculators', related.slug]">{{ related.title }} <span aria-hidden="true">↗</span></a>}</div></section>
   </div>
 } @else {

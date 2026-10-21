@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { CALCULATORS } from '../data/calculators';
+import { GUIDES, Guide } from '../data/guides';
+import { MaterialArtComponent } from '../shared/material-art.component';
 
 interface ContentSection {
   title: string;
@@ -16,30 +17,6 @@ interface PageContent {
 }
 
 const PAGES: Record<string, PageContent> = {
-  guides: {
-    title: 'Material guides', kicker: 'PROJECT KNOW-HOW',
-    intro: 'Understand the assumptions behind common material estimates and learn what to confirm before placing an order.',
-    sections: [
-      { title: 'Gravel planning guide', paragraphs: ['Gravel is sold by weight or volume, and the conversion depends on the material’s density and moisture. Measure the area and planned depth, then ask your supplier for the product’s approximate density and delivery units.', 'For uneven or newly prepared ground, consider an allowance for settling, grading, and handling. Confirm the final quantity with the supplier before ordering.'] },
-      { title: 'Paint planning guide', paragraphs: ['Start with the surface area, subtract large openings, and account for every coat. Coverage on the can is a guide; porous, textured, or previously unpainted surfaces may use more paint.', 'Check the label for the product and surface you plan to paint. Keep a little matching paint for touch-ups when practical.'] },
-    ],
-  },
-  'gravel-calculator-guide': {
-    title: 'Gravel estimating guide', kicker: 'LANDSCAPING MATERIALS',
-    intro: 'A dependable gravel estimate starts with measured dimensions and product information from your supplier.',
-    sections: [
-      { title: 'Measure the area and depth', paragraphs: ['Measure length and width in feet and determine the planned compacted or finished depth. Convert inches to feet when calculating volume. For irregular areas, divide the space into rectangles and total their areas.', 'The calculator converts cubic feet to cubic yards by dividing by 27. Add an allowance only after considering ground preparation, edging, compaction, and how material will be spread.'] },
-      { title: 'Confirm the material density', paragraphs: ['Different aggregates do not have one universal weight per cubic yard. Gradation, moisture, and compaction affect density. Ask the supplier for an estimate for the specific product and use it instead of a generic reference value.', 'A calculator’s ton estimate is only as accurate as the density entered. Verify weight limits, delivery conditions, and order increments with the supplier.'] },
-    ],
-  },
-  'paint-calculator-guide': {
-    title: 'Paint estimating guide', kicker: 'PAINTING PROJECTS',
-    intro: 'Estimate paint from your wall dimensions, the number of coats, and the coverage listed for your chosen product.',
-    sections: [
-      { title: 'Measure surfaces consistently', paragraphs: ['For rectangular walls, multiply width by height. Subtract the area of large doors and windows when useful; small openings can be left in the total to provide a modest allowance.', 'Add walls individually for a room. Ceilings, trim, cabinets, and textured surfaces need separate measurements and may have different coverage.'] },
-      { title: 'Use product-specific coverage', paragraphs: ['Coverage varies by paint formulation, surface texture, porosity, color change, and application method. Read the label and consider primer or additional coats where the manufacturer recommends them.', 'The purchase estimate rounds gallons up to whole gallons. Compare the estimated coverage with available package sizes and confirm your plan with the product instructions.'] },
-    ],
-  },
   about: {
     title: 'About BuildCalc', kicker: 'PLAN SMARTER',
     intro: 'BuildCalc is a collection of browser-based tools for planning common home improvement and construction material needs.',
@@ -83,18 +60,23 @@ const PAGES: Record<string, PageContent> = {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, MaterialArtComponent],
   templateUrl: './content.html',
 })
 export class ContentPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly pageKey = this.route.snapshot.paramMap.get('slug') ?? this.route.snapshot.data['contentKey'] as string;
-  protected readonly page: PageContent = PAGES[this.pageKey] ?? PAGES['disclaimer'];
-  protected readonly guides = this.pageKey === 'guides';
+  protected readonly guides = GUIDES;
+  protected readonly isGuideIndex = this.pageKey === 'guides';
+  protected readonly guide: Guide | undefined = GUIDES.find((item) => item.slug === this.pageKey);
+  protected readonly page: PageContent = this.guide
+    ? { title: this.guide.title, kicker: this.guide.kicker, intro: this.guide.intro, sections: this.guide.sections }
+    : this.isGuideIndex
+      ? { title: 'Material guides', kicker: 'PROJECT KNOW-HOW', intro: 'Understand the assumptions behind common material estimates and learn what to confirm before placing an order.', sections: [] }
+      : PAGES[this.pageKey] ?? PAGES['disclaimer'];
+  protected readonly bannerImage = `url(/images/${this.guide?.kind ?? 'hero'}.webp)`;
   protected readonly contact = this.pageKey === 'contact';
   protected readonly contactNotice = signal(false);
-  protected readonly guideCalculators = CALCULATORS.filter((item) =>
-    item.slug === 'gravel-calculator' || item.slug === 'paint-calculator');
 
   protected submitContact(): void {
     this.contactNotice.set(true);

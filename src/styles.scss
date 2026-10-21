@@ -1167,3 +1167,24 @@ p {
 .calc-hero h1 {
   margin: 0.2rem 0 0.6rem;
 }
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin-bottom: var(--space-5);
+}
+
+.guide-callout {
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.guide-callout a {
+  color: var(--accent-dark);
+  font-weight: 600;
+}

@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
+import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
   calculateArea, calculateConcrete, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, Estimate, EstimateRow, GravelInput, MulchInput, PaintInput, TileInput, Values,
@@ -280,6 +281,10 @@ export class CalculatorPage {
       width: this.convertAreaLength(area.width, area.unit, unit),
       unit,
     } : area));
+  }
+
+  protected guideSlug(slug: string): string | undefined {
+    return GUIDES.find((guide) => guide.calculatorSlug === slug)?.slug;
   }
 
   protected relatedCalculators(slug: string): CalculatorInfo[] {

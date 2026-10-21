@@ -1,5 +1,6 @@
-import { ActivatedRouteSnapshot, ResolveFn, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, ResolveFn, Route, Routes, UrlSegment } from '@angular/router';
 import { CALCULATORS } from './data/calculators';
+import { GUIDES } from './data/guides';
 
 const calculatorForRoute = (route: ActivatedRouteSnapshot) =>
   CALCULATORS.find((calculator) => calculator.slug === route.paramMap.get('slug'));
@@ -7,10 +8,11 @@ const calculatorForRoute = (route: ActivatedRouteSnapshot) =>
 const calculatorDescriptionResolver: ResolveFn<string> = (route) =>
   calculatorForRoute(route)?.description ?? 'Practical construction and home improvement calculator.';
 
+const guideForRoute = (route: ActivatedRouteSnapshot) =>
+  GUIDES.find((guide) => guide.slug === route.paramMap.get('slug'));
+
 const guideDescriptionResolver: ResolveFn<string> = (route) =>
-  route.paramMap.get('slug') === 'gravel-calculator-guide'
-    ? 'Learn how to estimate gravel volume and weight, verify material density, and plan a supplier order.'
-    : 'Learn how to estimate wall paint from dimensions, coats, product coverage, and surface conditions.';
+  guideForRoute(route)?.description ?? 'Practical material estimating guides from BuildCalc.';
 
 export const routes: Routes = [
   {
@@ -37,13 +39,14 @@ export const routes: Routes = [
     title: 'Material Guides | BuildCalc',
     data: {
       contentKey: 'guides',
-      description: 'Practical material guides for estimating gravel and paint quantities, understanding coverage, and planning your project.',
+      description: 'Practical material guides for estimating gravel, paint, tile, concrete, mulch and area, understanding coverage, and planning your project.',
     },
   },
   {
     path: 'guides/:slug',
+    canMatch: [(_route: Route, segments: UrlSegment[]) => GUIDES.some((guide) => guide.slug === segments[1]?.path)],
     loadComponent: () => import('./pages/content').then((module) => module.ContentPage),
-    title: (route) => route.paramMap.get('slug') === 'gravel-calculator-guide' ? 'Gravel Estimating Guide | BuildCalc' : 'Paint Estimating Guide | BuildCalc',
+    title: (route) => `${guideForRoute(route)?.title ?? 'Guide not found'} | BuildCalc`,
     resolve: { description: guideDescriptionResolver },
   },
   ...[
@@ -58,5 +61,10 @@ export const routes: Routes = [
     title: page.title,
     data: { contentKey: page.key, description: page.description },
   })),
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () => import('./pages/not-found').then((module) => module.NotFoundPage),
+    title: 'Page not found | BuildCalc',
+    data: { description: 'The page you requested could not be found.', noindex: true },
+  },
 ];
