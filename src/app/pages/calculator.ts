@@ -58,7 +58,7 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'depth', label: 'Gravel depth', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
     { key: 'density', label: 'Material density', unit: 'lb / cu yd', unitKey: 'densityUnit', unitOptions: DENSITY_UNITS, min: 0, step: 1, hint: 'Example only—confirm the density with your supplier.' },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
-    { key: 'price', label: 'Price per unit (optional)', unit: '$', min: 0, step: 0.01, optional: true },
+    { key: 'price', label: 'Price per unit', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   paint: [
     { key: 'width', label: 'Wall width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -67,7 +67,7 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'coats', label: 'Number of coats', unit: 'coats', min: 1, step: 1 },
     { key: 'coverage', label: 'Paint coverage', unit: 'sq ft / gallon', unitKey: 'coverageUnit', unitOptions: COVERAGE_UNITS, min: 0.01, step: 1, hint: 'Check the label for your paint’s stated coverage.' },
     { key: 'waste', label: 'Extra allowance', unit: '%', min: 0, step: 1 },
-    { key: 'price', label: 'Price per gallon (optional)', unit: '$', min: 0, step: 0.01, optional: true },
+    { key: 'price', label: 'Price per gallon', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   tile: [
     { key: 'length', label: 'Room length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -76,22 +76,22 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'tileWidth', label: 'Tile width', unit: 'in', unitKey: 'tileUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
     { key: 'grout', label: 'Grout spacing', unit: 'in', unitKey: 'groutUnit', unitOptions: INCH_UNITS, min: 0, step: 0.01 },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
-    { key: 'boxSize', label: 'Tiles per box (optional)', unit: 'tiles', min: 0, step: 1, optional: true },
-    { key: 'price', label: 'Price per tile or box (optional)', unit: '$', min: 0, step: 0.01, optional: true },
+    { key: 'boxSize', label: 'Tiles per box', unit: 'tiles', min: 0, step: 1, optional: true },
+    { key: 'price', label: 'Price per tile or box', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   concrete: [
     { key: 'length', label: 'Slab length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
     { key: 'width', label: 'Slab width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
     { key: 'depth', label: 'Slab thickness', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
-    { key: 'price', label: 'Price per cubic yard (optional)', unit: '$', min: 0, step: 0.01, optional: true },
+    { key: 'price', label: 'Price per cubic yard', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   mulch: [
     { key: 'length', label: 'Bed length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
     { key: 'width', label: 'Bed width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
     { key: 'depth', label: 'Mulch depth', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
-    { key: 'price', label: 'Price per cubic yard (optional)', unit: '$', min: 0, step: 0.01, optional: true },
+    { key: 'price', label: 'Price per cubic yard', unit: '$', min: 0, step: 0.01, optional: true },
   ],
 };
 
@@ -379,9 +379,9 @@ export class CalculatorPage {
   private localizedFieldLabel(field: Field, system: UnitSystem): string {
     if (system === 'us') return field.label;
     const labels: Record<string, string> = {
-      'Price per unit (optional)': 'Price per metric tonne or cubic meter (optional)',
-      'Price per gallon (optional)': 'Price per liter (optional)',
-      'Price per cubic yard (optional)': 'Price per cubic meter (optional)',
+      'Price per unit': 'Price per metric tonne or cubic meter',
+      'Price per gallon': 'Price per liter',
+      'Price per cubic yard': 'Price per cubic meter',
     };
     return labels[field.label] ?? field.label;
   }
