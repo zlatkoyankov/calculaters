@@ -726,6 +726,37 @@ p {
   background: #fff;
 }
 
+.field-controls {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.field-controls > input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  padding: 0.7rem;
+  font: inherit;
+  background: #fff;
+}
+
+.field-controls > select {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 4.8rem;
+  max-width: 7rem;
+  margin-left: -1px;
+  border-radius: 0 0.7rem 0.7rem 0;
+  padding: 0.55rem 0.45rem;
+  font-size: 0.9rem;
+}
+
+.field-controls > input:has(+ select) {
+  border-radius: 0.7rem 0 0 0.7rem;
+}
+
 .input-with-unit .unit {
   position: absolute;
   right: 0.7rem;
@@ -734,6 +765,10 @@ p {
   color: var(--text-muted);
   pointer-events: none;
   font-size: 0.85rem;
+}
+
+.form-field label {
+  font-weight: 600;
 }
 
 .form-field small {

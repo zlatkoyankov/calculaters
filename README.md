@@ -15,6 +15,7 @@ Tagline: **Plan smarter. Build with confidence.**
   - Concrete
   - Square footage
   - Mulch
+- Unit selectors for imperial and metric measurements where practical (feet, inches, meters, centimeters, and millimeters for small measurements).
 - Material guides and supporting pages (about, contact, privacy, terms, disclaimer).
 - SSR-ready Angular app (standalone components + lazy routes).
 - Route-specific title + meta description handling via a centralized SEO service.
@@ -108,6 +109,7 @@ After AdSense approval:
 ## Calculation assumptions and limitations
 
 - All calculators provide planning estimates, not engineering or contractual guarantees.
+- Unit selectors convert entered measurements into consistent internal US customary units before calculating; square-footage results also show square meters.
 - Density, coverage, product packaging, compaction, and site conditions vary.
 - Waste allowance should be validated per project.
 - Concrete volume outputs are not structural design guidance.

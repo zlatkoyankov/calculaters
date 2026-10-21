@@ -21,6 +21,8 @@ export interface GravelInput {
   waste: number;
   price?: number;
   priceUnit?: number;
+  dimensionUnit?: number;
+  depthUnit?: number;
 }
 
 export interface PaintInput {
@@ -31,6 +33,8 @@ export interface PaintInput {
   coverage: number;
   waste: number;
   price?: number;
+  dimensionUnit?: number;
+  openingsUnit?: number;
 }
 
 export interface TileInput {
@@ -43,6 +47,9 @@ export interface TileInput {
   boxSize?: number;
   price?: number;
   priceUnit?: number;
+  dimensionUnit?: number;
+  tileUnit?: number;
+  groutUnit?: number;
 }
 
 export interface ConcreteInput {
@@ -51,6 +58,8 @@ export interface ConcreteInput {
   depth: number;
   waste: number;
   price?: number;
+  dimensionUnit?: number;
+  depthUnit?: number;
 }
 
 export interface MulchInput {
@@ -59,7 +68,14 @@ export interface MulchInput {
   depth: number;
   waste: number;
   price?: number;
+  dimensionUnit?: number;
+  depthUnit?: number;
 }
+
+const FEET_PER_UNIT = [1, 1 / 12, 3.280839895, 1 / 30.48, 1 / 304.8];
+const INCHES_PER_UNIT = [12, 1, 39.37007874, 1 / 2.54, 1 / 25.4];
+const SQUARE_FEET_PER_UNIT = [1, 1 / 144, 10.7639104, 1 / 929.0304];
+const unitFactor = (factors: number[], unit: number | undefined): number => factors[unit ?? 0] ?? 1;
 
 const positive = (value: number, name: string): void => {
   if (!Number.isFinite(value) || value <= 0) throw new Error(`${name} must be greater than zero.`);
@@ -81,8 +97,12 @@ export function calculateGravel(values: GravelInput): Estimate {
   nonNegative(values.density, 'Density');
   nonNegative(values.waste, 'Waste allowance');
 
-  const area = values.length * values.width;
-  const cubicFeet = area * values.depth / 12;
+  const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const depthInches = values.depth * unitFactor(INCHES_PER_UNIT, values.depthUnit ?? 1);
+  const lengthFeet = values.length * dimensionFactor;
+  const widthFeet = values.width * dimensionFactor;
+  const area = lengthFeet * widthFeet;
+  const cubicFeet = area * depthInches / 12;
   const cubicYards = cubicFeet / 27;
   const adjusted = cubicYards * wasteMultiplier(values.waste);
   const tons = values.density > 0 ? adjusted * values.density / 2000 : 0;
@@ -113,10 +133,12 @@ export function calculatePaint(values: PaintInput): Estimate {
   nonNegative(values.openings, 'Excluded area');
   nonNegative(values.waste, 'Waste allowance');
 
-  const gross = values.width * values.height;
-  if (values.openings > gross) throw new Error('Excluded area cannot exceed gross wall area.');
+  const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const gross = values.width * dimensionFactor * values.height * dimensionFactor;
+  const openings = values.openings * unitFactor(SQUARE_FEET_PER_UNIT, values.openingsUnit);
+  if (openings > gross) throw new Error('Excluded area cannot exceed gross wall area.');
 
-  const net = gross - values.openings;
+  const net = gross - openings;
   const coverArea = net * values.coats * wasteMultiplier(values.waste);
   const gallons = coverArea / values.coverage;
   const price = values.price ?? 0;
@@ -125,7 +147,7 @@ export function calculatePaint(values: PaintInput): Estimate {
   return {
     rows: [
       { label: 'Gross wall area', value: gross, unit: 'sq ft', precision: 2 },
-      { label: 'Area excluded', value: values.openings, unit: 'sq ft', precision: 2 },
+      { label: 'Area excluded', value: openings, unit: 'sq ft', precision: 2 },
       { label: 'Net wall area', value: net, unit: 'sq ft', precision: 2 },
       { label: 'Coverage across coats', value: coverArea, unit: 'sq ft', precision: 2 },
       { label: 'Estimated paint', value: gallons, unit: 'gallons', precision: 2 },
@@ -144,8 +166,12 @@ export function calculateTile(values: TileInput): Estimate {
   nonNegative(values.grout, 'Grout spacing');
   nonNegative(values.waste, 'Waste allowance');
 
-  const roomArea = values.length * values.width;
-  const tileFace = (values.tileLength + values.grout) * (values.tileWidth + values.grout) / 144;
+  const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const roomArea = values.length * dimensionFactor * values.width * dimensionFactor;
+  const tileInches = unitFactor(INCHES_PER_UNIT, values.tileUnit ?? 1);
+  const groutInches = unitFactor(INCHES_PER_UNIT, values.groutUnit ?? 1);
+  const tileFace = (values.tileLength * tileInches + values.grout * groutInches)
+    * (values.tileWidth * tileInches + values.grout * groutInches) / 144;
   const rawTiles = roomArea / tileFace * wasteMultiplier(values.waste);
   const tiles = Math.ceil(rawTiles);
   const boxes = (values.boxSize ?? 0) > 0 ? Math.ceil(tiles / (values.boxSize ?? 0)) : 0;
@@ -171,8 +197,10 @@ export function calculateConcrete(values: ConcreteInput): Estimate {
   positive(values.depth, 'Thickness');
   nonNegative(values.waste, 'Waste allowance');
 
-  const area = values.length * values.width;
-  const cubicFeet = area * values.depth / 12;
+  const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const depthInches = values.depth * unitFactor(INCHES_PER_UNIT, values.depthUnit ?? 1);
+  const area = values.length * dimensionFactor * values.width * dimensionFactor;
+  const cubicFeet = area * depthInches / 12;
   const cubicYards = cubicFeet / 27;
   const adjusted = cubicYards * wasteMultiplier(values.waste);
   const price = values.price ?? 0;
@@ -190,12 +218,12 @@ export function calculateConcrete(values: ConcreteInput): Estimate {
   };
 }
 
-export function calculateArea(areas: { length: number; width: number; unit: 'ft' | 'in' }[]): Estimate {
+export function calculateArea(areas: { length: number; width: number; unit: 'ft' | 'in' | 'm' | 'cm' }[]): Estimate {
   if (areas.length === 0) throw new Error('Add at least one area.');
   const totals = areas.map((area, index) => {
     positive(area.length, `Area ${index + 1} length`);
     positive(area.width, `Area ${index + 1} width`);
-    const factor = area.unit === 'in' ? 1 / 12 : 1;
+    const factor = area.unit === 'ft' ? 1 : area.unit === 'in' ? 1 / 12 : area.unit === 'm' ? 3.280839895 : 1 / 30.48;
     return area.length * factor * area.width * factor;
   });
   const total = totals.reduce((sum, value) => sum + value, 0);
@@ -215,8 +243,10 @@ export function calculateMulch(values: MulchInput): Estimate {
   positive(values.depth, 'Depth');
   nonNegative(values.waste, 'Waste allowance');
 
-  const area = values.length * values.width;
-  const cubicFeet = area * values.depth / 12;
+  const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const depthInches = values.depth * unitFactor(INCHES_PER_UNIT, values.depthUnit ?? 1);
+  const area = values.length * dimensionFactor * values.width * dimensionFactor;
+  const cubicFeet = area * depthInches / 12;
   const cubicYards = cubicFeet / 27;
   const adjusted = cubicYards * wasteMultiplier(values.waste);
   const price = values.price ?? 0;

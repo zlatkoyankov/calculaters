@@ -70,6 +70,16 @@ describe('calculation utilities', () => {
     expect(adjusted).toBeCloseTo(base * 1.1, 6);
   });
 
+  it('normalizes metric measurements before estimating', () => {
+    const imperial = calculateConcrete({ length: 10, width: 10, depth: 4, waste: 0, price: 0 });
+    const metric = calculateConcrete({
+      length: 3.048, width: 3.048, depth: 10.16, waste: 0, price: 0, dimensionUnit: 2, depthUnit: 3,
+    });
+    const imperialVolume = imperial.rows.find((row) => row.label === 'Volume before waste')?.value;
+    const metricVolume = metric.rows.find((row) => row.label === 'Volume before waste')?.value;
+    expect(metricVolume).toBeCloseTo(imperialVolume ?? 0, 6);
+  });
+
   it('throws for zero, negative, missing, or invalid inputs', () => {
     expect(() => calculateConcrete({ length: 0, width: 10, depth: 4, waste: 0, price: 0 })).toThrow();
     expect(() => calculatePaint({ width: 10, height: 8, openings: 1000, coats: 2, coverage: 350, waste: 0, price: 0 })).toThrow();

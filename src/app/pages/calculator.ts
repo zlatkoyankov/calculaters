@@ -14,65 +14,85 @@ interface Field {
   step: number;
   hint?: string;
   optional?: boolean;
+  unitKey?: string;
+  unitOptions?: { value: number; label: string }[];
 }
 
 interface AreaEntry {
   length: number;
   width: number;
-  unit: 'ft' | 'in';
+  unit: 'ft' | 'in' | 'm' | 'cm';
 }
+
+const DISTANCE_UNITS = [
+  { value: 0, label: 'ft' },
+  { value: 1, label: 'in' },
+  { value: 2, label: 'm' },
+  { value: 3, label: 'cm' },
+];
+const INCH_UNITS = [
+  { value: 1, label: 'in' },
+  { value: 3, label: 'cm' },
+  { value: 4, label: 'mm' },
+];
+const AREA_UNITS = [
+  { value: 0, label: 'sq ft' },
+  { value: 1, label: 'sq in' },
+  { value: 2, label: 'sq m' },
+  { value: 3, label: 'sq cm' },
+];
 
 const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
   gravel: [
-    { key: 'length', label: 'Area length', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'width', label: 'Area width', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'depth', label: 'Gravel depth', unit: 'in', min: 0.01, step: 0.1 },
+    { key: 'length', label: 'Area length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'width', label: 'Area width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'depth', label: 'Gravel depth', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
     { key: 'density', label: 'Material density', unit: 'lb / cu yd', min: 0, step: 1, hint: 'Example only—confirm the density with your supplier.' },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
     { key: 'price', label: 'Price per unit (optional)', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   paint: [
-    { key: 'width', label: 'Wall width', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'height', label: 'Wall height', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'openings', label: 'Doors and windows to subtract', unit: 'sq ft', min: 0, step: 0.5 },
+    { key: 'width', label: 'Wall width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'height', label: 'Wall height', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'openings', label: 'Doors and windows to subtract', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0, step: 0.5 },
     { key: 'coats', label: 'Number of coats', unit: 'coats', min: 1, step: 1 },
     { key: 'coverage', label: 'Paint coverage', unit: 'sq ft / gallon', min: 0.01, step: 1, hint: 'Check the label for your paint’s stated coverage.' },
     { key: 'waste', label: 'Extra allowance', unit: '%', min: 0, step: 1 },
     { key: 'price', label: 'Price per gallon (optional)', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   tile: [
-    { key: 'length', label: 'Room length', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'width', label: 'Room width', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'tileLength', label: 'Tile length', unit: 'in', min: 0.01, step: 0.1 },
-    { key: 'tileWidth', label: 'Tile width', unit: 'in', min: 0.01, step: 0.1 },
-    { key: 'grout', label: 'Grout spacing', unit: 'in', min: 0, step: 0.01 },
+    { key: 'length', label: 'Room length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'width', label: 'Room width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'tileLength', label: 'Tile length', unit: 'in', unitKey: 'tileUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
+    { key: 'tileWidth', label: 'Tile width', unit: 'in', unitKey: 'tileUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
+    { key: 'grout', label: 'Grout spacing', unit: 'in', unitKey: 'groutUnit', unitOptions: INCH_UNITS, min: 0, step: 0.01 },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
     { key: 'boxSize', label: 'Tiles per box (optional)', unit: 'tiles', min: 0, step: 1, optional: true },
     { key: 'price', label: 'Price per tile or box (optional)', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   concrete: [
-    { key: 'length', label: 'Slab length', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'width', label: 'Slab width', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'depth', label: 'Slab thickness', unit: 'in', min: 0.01, step: 0.1 },
+    { key: 'length', label: 'Slab length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'width', label: 'Slab width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'depth', label: 'Slab thickness', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
     { key: 'price', label: 'Price per cubic yard (optional)', unit: '$', min: 0, step: 0.01, optional: true },
   ],
   mulch: [
-    { key: 'length', label: 'Bed length', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'width', label: 'Bed width', unit: 'ft', min: 0.01, step: 0.1 },
-    { key: 'depth', label: 'Mulch depth', unit: 'in', min: 0.01, step: 0.1 },
+    { key: 'length', label: 'Bed length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'width', label: 'Bed width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'depth', label: 'Mulch depth', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
     { key: 'price', label: 'Price per cubic yard (optional)', unit: '$', min: 0, step: 0.01, optional: true },
   ],
 };
 
 const DEFAULTS: Record<CalculatorKind, Values> = {
-  gravel: { length: 20, width: 10, depth: 3, density: 2700, waste: 10, price: 0, priceUnit: 0 },
-  paint: { width: 12, height: 8, openings: 20, coats: 2, coverage: 350, waste: 0, price: 0 },
-  tile: { length: 10, width: 12, tileLength: 12, tileWidth: 12, grout: 0.125, waste: 10, boxSize: 10, price: 0, priceUnit: 0 },
-  concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0 },
+  gravel: { length: 20, width: 10, depth: 3, density: 2700, waste: 10, price: 0, priceUnit: 0, dimensionUnit: 0, depthUnit: 1 },
+  paint: { width: 12, height: 8, openings: 20, coats: 2, coverage: 350, waste: 0, price: 0, dimensionUnit: 0, openingsUnit: 0 },
+  tile: { length: 10, width: 12, tileLength: 12, tileWidth: 12, grout: 0.125, waste: 10, boxSize: 10, price: 0, priceUnit: 0, dimensionUnit: 0, tileUnit: 1, groutUnit: 1 },
+  concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   area: {},
-  mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0 },
+  mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
 };
 
 @Component({
@@ -154,7 +174,8 @@ export class CalculatorPage {
   }
 
   protected setAreaUnit(index: number, event: Event): void {
-    const unit = (event.target as HTMLSelectElement).value === 'in' ? 'in' : 'ft';
+    const selected = (event.target as HTMLSelectElement).value;
+    const unit: AreaEntry['unit'] = selected === 'in' || selected === 'm' || selected === 'cm' ? selected : 'ft';
     this.areas.update((areas) => areas.map((area, itemIndex) => itemIndex === index ? { ...area, unit } : area));
   }
 
@@ -213,6 +234,8 @@ export class CalculatorPage {
       waste: this.number(values, 'waste'),
       price: this.number(values, 'price'),
       priceUnit: this.number(values, 'priceUnit'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      depthUnit: this.number(values, 'depthUnit'),
     };
   }
 
@@ -225,6 +248,8 @@ export class CalculatorPage {
       coverage: this.number(values, 'coverage'),
       waste: this.number(values, 'waste'),
       price: this.number(values, 'price'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      openingsUnit: this.number(values, 'openingsUnit'),
     };
   }
 
@@ -239,6 +264,9 @@ export class CalculatorPage {
       boxSize: this.number(values, 'boxSize'),
       price: this.number(values, 'price'),
       priceUnit: this.number(values, 'priceUnit'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      tileUnit: this.number(values, 'tileUnit'),
+      groutUnit: this.number(values, 'groutUnit'),
     };
   }
 
@@ -249,6 +277,8 @@ export class CalculatorPage {
       depth: this.number(values, 'depth'),
       waste: this.number(values, 'waste'),
       price: this.number(values, 'price'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      depthUnit: this.number(values, 'depthUnit'),
     };
   }
 
@@ -259,6 +289,8 @@ export class CalculatorPage {
       depth: this.number(values, 'depth'),
       waste: this.number(values, 'waste'),
       price: this.number(values, 'price'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      depthUnit: this.number(values, 'depthUnit'),
     };
   }
 }

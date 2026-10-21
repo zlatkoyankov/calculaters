@@ -14,9 +14,9 @@
             @for (area of areas(); track $index; let index = $index) {
               <div class="room-row">
                 <div class="room-row-title"><strong>Area {{ index + 1 }}</strong>@if (areas().length > 1) {<button class="remove-button" type="button" (click)="removeArea(index)" aria-label="Remove area {{ index + 1 }}">Remove</button>}</div>
-                <label class="form-field"><span>Length</span><div class="input-with-unit"><input type="number" min="0.01" step="any" [ngModel]="area.length" (ngModelChange)="setAreaValue(index, 'length', $event)" [name]="'length-' + index" required><span class="unit">{{ area.unit }}</span></div></label>
-                <label class="form-field"><span>Width</span><div class="input-with-unit"><input type="number" min="0.01" step="any" [ngModel]="area.width" (ngModelChange)="setAreaValue(index, 'width', $event)" [name]="'width-' + index" required><span class="unit">{{ area.unit }}</span></div></label>
-                <label class="form-field"><span>Measurement unit</span><select [value]="area.unit" (change)="setAreaUnit(index, $event)"><option value="ft">Feet</option><option value="in">Inches</option></select></label>
+                <div class="form-field"><label [for]="'area-length-' + index">Length</label><div class="input-with-unit"><input [id]="'area-length-' + index" type="number" min="0.01" step="any" [ngModel]="area.length" (ngModelChange)="setAreaValue(index, 'length', $event)" [name]="'length-' + index" required><span class="unit">{{ area.unit }}</span></div></div>
+                <div class="form-field"><label [for]="'area-width-' + index">Width</label><div class="input-with-unit"><input [id]="'area-width-' + index" type="number" min="0.01" step="any" [ngModel]="area.width" (ngModelChange)="setAreaValue(index, 'width', $event)" [name]="'width-' + index" required><span class="unit">{{ area.unit }}</span></div></div>
+                <label class="form-field"><span>Measurement unit</span><select [value]="area.unit" (change)="setAreaUnit(index, $event)"><option value="ft">Feet</option><option value="in">Inches</option><option value="m">Meters</option><option value="cm">Centimeters</option></select></label>
               </div>
             }
           </div>
@@ -24,14 +24,20 @@
         } @else {
           <div class="fields-grid">
             @for (field of fields(); track field.key) {
-              <label class="form-field">
-                <span>{{ field.label }} @if (field.optional) {<span class="optional">(optional)</span>}</span>
-                <div class="input-with-unit">
-                  <input type="number" [min]="field.min" [step]="field.step" [ngModel]="values()[field.key]" (ngModelChange)="setValue(field.key, $event)" [name]="field.key" [required]="!field.optional">
-                  <span class="unit">{{ field.unit }}</span>
+              <div class="form-field">
+                <label [for]="'calc-' + field.key">{{ field.label }} @if (field.optional) {<span class="optional">(optional)</span>}</label>
+                <div class="field-controls">
+                  <input [id]="'calc-' + field.key" type="number" [min]="field.min" [step]="field.step" [ngModel]="values()[field.key]" (ngModelChange)="setValue(field.key, $event)" [name]="field.key" [required]="!field.optional">
+                  @if (field.unitKey && field.unitOptions) {
+                    <select [ngModel]="values()[field.unitKey]" (ngModelChange)="setValue(field.unitKey!, $event)" [name]="field.unitKey" [attr.aria-label]="field.label + ' unit'">
+                      @for (unit of field.unitOptions; track unit.value) {<option [ngValue]="unit.value">{{ unit.label }}</option>}
+                    </select>
+                  } @else {
+                    <span class="unit">{{ field.unit }}</span>
+                  }
                 </div>
                 @if (field.hint) {<small>{{ field.hint }}</small>}
-              </label>
+              </div>
             }
           </div>
           @if (calc.kind === 'gravel') {
