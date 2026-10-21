@@ -123,3 +123,7 @@ Recommended validation workflow:
 - Run [src/app/utils/calculations.spec.ts](/Users/zlatko/WORK/calculators/src/app/utils/calculations.spec.ts) with `npm test`.
 - Compare sample results against independent hand calculations.
 - Confirm supplier-specific inputs (coverage, density, package size) before final purchase planning.
+
+## Theming
+
+Colors and fonts follow the project-hub palette (green ink, soft paper, coral accent; DM Sans). Light and dark themes are CSS-variable tokens in `src/styles.scss` (`:root` and `:root[data-theme='dark']`). `ThemeService` picks the saved choice or the system preference, persists it in `localStorage`, and an inline script in `index.html` prevents a flash on load. Use the header toggle to switch.
