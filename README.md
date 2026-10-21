@@ -127,3 +127,7 @@ Recommended validation workflow:
 ## Theming
 
 Colors and fonts follow the project-hub palette (green ink, soft paper, coral accent; DM Sans). Light and dark themes are CSS-variable tokens in `src/styles.scss` (`:root` and `:root[data-theme='dark']`). `ThemeService` picks the saved choice or the system preference, persists it in `localStorage`, and an inline script in `index.html` prevents a flash on load. Use the header toggle to switch.
+
+## Shared design system
+
+Tokens, base frame and theme logic live in `design-system/` (see its README) so other projects can reuse the same style. `tokens.css` is loaded from `angular.json`.
