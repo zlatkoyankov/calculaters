@@ -23,6 +23,8 @@ export interface GravelInput {
   priceUnit?: number;
   dimensionUnit?: number;
   depthUnit?: number;
+  densityUnit?: number;
+  metricPrice?: boolean;
 }
 
 export interface PaintInput {
@@ -35,6 +37,8 @@ export interface PaintInput {
   price?: number;
   dimensionUnit?: number;
   openingsUnit?: number;
+  coverageUnit?: number;
+  metricPrice?: boolean;
 }
 
 export interface TileInput {
@@ -60,6 +64,7 @@ export interface ConcreteInput {
   price?: number;
   dimensionUnit?: number;
   depthUnit?: number;
+  metricPrice?: boolean;
 }
 
 export interface MulchInput {
@@ -70,6 +75,7 @@ export interface MulchInput {
   price?: number;
   dimensionUnit?: number;
   depthUnit?: number;
+  metricPrice?: boolean;
 }
 
 const FEET_PER_UNIT = [1, 1 / 12, 3.280839895, 1 / 30.48, 1 / 304.8];
@@ -105,12 +111,20 @@ export function calculateGravel(values: GravelInput): Estimate {
   const cubicFeet = area * depthInches / 12;
   const cubicYards = cubicFeet / 27;
   const adjusted = cubicYards * wasteMultiplier(values.waste);
-  const tons = values.density > 0 ? adjusted * values.density / 2000 : 0;
+  const density = values.densityUnit === 1 ? values.density / 0.593276 : values.density;
+  const tons = density > 0 ? adjusted * density / 2000 : 0;
   const price = values.price ?? 0;
   nonNegative(price, 'Price');
 
-  const priceUnit = values.priceUnit === 1 ? 'cubic yard' : 'ton';
-  const cost = price > 0 ? price * (values.priceUnit === 1 ? adjusted : tons) : null;
+  const metricVolume = adjusted * 0.764554858;
+  const metricDensity = values.densityUnit === 1 ? values.density : values.density / 0.593276;
+  const priceUnit = values.priceUnit === 1
+    ? values.metricPrice ? 'cubic meter' : 'cubic yard'
+    : values.metricPrice ? 'metric tonne' : 'ton';
+  const priceQuantity = values.priceUnit === 1
+    ? values.metricPrice ? metricVolume : adjusted
+    : values.metricPrice ? metricVolume * metricDensity / 1000 : tons;
+  const cost = price > 0 ? price * priceQuantity : null;
 
   return {
     rows: [
@@ -140,7 +154,10 @@ export function calculatePaint(values: PaintInput): Estimate {
 
   const net = gross - openings;
   const coverArea = net * values.coats * wasteMultiplier(values.waste);
-  const gallons = coverArea / values.coverage;
+  const coverage = values.coverageUnit === 1 ? values.coverage * 40.745 : values.coverage;
+  const gallons = coverArea / coverage;
+  const metricLiters = gallons * 3.785411784;
+  const purchaseQuantity = values.metricPrice ? Math.ceil(metricLiters) : Math.ceil(gallons);
   const price = values.price ?? 0;
   nonNegative(price, 'Price');
 
@@ -152,9 +169,11 @@ export function calculatePaint(values: PaintInput): Estimate {
       { label: 'Coverage across coats', value: coverArea, unit: 'sq ft', precision: 2 },
       { label: 'Estimated paint', value: gallons, unit: 'gallons', precision: 2 },
       { label: 'Whole-gallon purchase', value: Math.ceil(gallons), unit: 'gallons', precision: 0, detail: 'rounded up for purchasing' },
-      ...(price > 0 ? [{ label: 'Estimated cost', value: Math.ceil(gallons) * price, unit: 'USD', precision: 2 }] : []),
+      ...(price > 0 ? [{ label: 'Estimated cost', value: purchaseQuantity * price, unit: 'USD', precision: 2 }] : []),
     ],
-    summary: `Plan for ${Math.ceil(gallons)} gallon${Math.ceil(gallons) === 1 ? '' : 's'} for this estimate.`,
+    summary: values.metricPrice
+      ? `Plan for ${purchaseQuantity} liters for this estimate.`
+      : `Plan for ${purchaseQuantity} gallon${purchaseQuantity === 1 ? '' : 's'} for this estimate.`,
   };
 }
 
@@ -212,7 +231,7 @@ export function calculateConcrete(values: ConcreteInput): Estimate {
       { label: 'Volume', value: cubicFeet, unit: 'cu ft', precision: 2 },
       { label: 'Volume before waste', value: cubicYards, unit: 'cu yd', precision: 2 },
       { label: 'Volume with waste', value: adjusted, unit: 'cu yd', precision: 2 },
-      ...(price > 0 ? [{ label: 'Estimated material cost', value: adjusted * price, unit: 'USD', precision: 2 }] : []),
+      ...(price > 0 ? [{ label: 'Estimated material cost', value: adjusted * (values.metricPrice ? 0.764554858 : 1) * price, unit: 'USD', precision: 2 }] : []),
     ],
     summary: `${adjusted.toFixed(2)} cubic yards including waste.`,
   };
@@ -258,7 +277,7 @@ export function calculateMulch(values: MulchInput): Estimate {
       { label: 'Volume', value: cubicFeet, unit: 'cu ft', precision: 2 },
       { label: 'Volume before waste', value: cubicYards, unit: 'cu yd', precision: 2 },
       { label: 'Volume with waste', value: adjusted, unit: 'cu yd', precision: 2 },
-      ...(price > 0 ? [{ label: 'Estimated material cost', value: adjusted * price, unit: 'USD', precision: 2 }] : []),
+      ...(price > 0 ? [{ label: 'Estimated material cost', value: adjusted * (values.metricPrice ? 0.764554858 : 1) * price, unit: 'USD', precision: 2 }] : []),
     ],
     summary: `${adjusted.toFixed(2)} cubic yards including waste.`,
   };

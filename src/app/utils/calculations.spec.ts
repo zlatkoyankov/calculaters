@@ -80,6 +80,24 @@ describe('calculation utilities', () => {
     expect(metricVolume).toBeCloseTo(imperialVolume ?? 0, 6);
   });
 
+  it('supports metric gravel density and paint coverage inputs', () => {
+    const gravel = calculateGravel({
+      length: 6.096, width: 3.048, depth: 7.62, density: 1600, waste: 10,
+      dimensionUnit: 2, depthUnit: 3, densityUnit: 1,
+    });
+    const volume = gravel.rows.find((row) => row.label === 'Volume with waste')?.value;
+    const weight = gravel.rows.find((row) => row.label === 'Estimated weight')?.value;
+    expect(volume).toBeCloseTo(2.04, 2);
+    expect(weight).toBeCloseTo(2.75, 1);
+
+    const paint = calculatePaint({
+      width: 3.6576, height: 2.4384, openings: 1.858, coats: 2,
+      coverage: 8.59, waste: 0, dimensionUnit: 2, openingsUnit: 2, coverageUnit: 1,
+    });
+    const gallons = paint.rows.find((row) => row.label === 'Estimated paint')?.value;
+    expect(gallons).toBeCloseTo(0.434, 2);
+  });
+
   it('throws for zero, negative, missing, or invalid inputs', () => {
     expect(() => calculateConcrete({ length: 0, width: 10, depth: 4, waste: 0, price: 0 })).toThrow();
     expect(() => calculatePaint({ width: 10, height: 8, openings: 1000, coats: 2, coverage: 350, waste: 0, price: 0 })).toThrow();

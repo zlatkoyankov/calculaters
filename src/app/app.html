@@ -13,6 +13,7 @@
       <a routerLink="/calculators" routerLinkActive="active" (click)="closeMenu()">Calculators</a>
       <a routerLink="/guides" routerLinkActive="active" (click)="closeMenu()">Material guides</a>
       <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About</a>
+      <label class="unit-preference"><span>Units</span><select [value]="units.system()" (change)="updateUnits($event)" aria-label="Preferred measurement system"><option value="us">US customary</option><option value="metric">Metric</option></select></label>
       <a class="button button-small" routerLink="/calculators" (click)="closeMenu()">All calculators <span aria-hidden="true">→</span></a>
     </nav>
   </div>

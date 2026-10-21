@@ -221,6 +221,35 @@ p {
   color: var(--accent-dark);
 }
 
+.unit-preference {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.unit-preference select {
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem 1.7rem 0.4rem 0.7rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 0.85rem) 50%, calc(100% - 0.6rem) 50%;
+  background-size: 0.25rem 0.25rem, 0.25rem 0.25rem;
+  background-repeat: no-repeat;
+}
+
+.unit-preference select:focus-visible {
+  outline: 3px solid #1f8d5a6a;
+  outline-offset: 2px;
+}
+
 .menu-toggle {
   display: none;
   border: 1px solid var(--border);
@@ -1084,6 +1113,10 @@ p {
 
   .main-nav.is-open {
     display: flex;
+  }
+
+  .unit-preference {
+    padding: 0.35rem 0;
   }
 }
 

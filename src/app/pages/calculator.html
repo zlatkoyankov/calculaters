@@ -29,7 +29,7 @@
                 <div class="field-controls">
                   <input [id]="'calc-' + field.key" type="number" [min]="field.min" [step]="field.step" [ngModel]="values()[field.key]" (ngModelChange)="setValue(field.key, $event)" [name]="field.key" [required]="!field.optional">
                   @if (field.unitKey && field.unitOptions) {
-                    <select [ngModel]="values()[field.unitKey]" (ngModelChange)="setValue(field.unitKey!, $event)" [name]="field.unitKey" [attr.aria-label]="field.label + ' unit'">
+                    <select [ngModel]="values()[field.unitKey]" (ngModelChange)="setUnitValue(field.unitKey!, $event)" [name]="field.unitKey + '-' + field.key" [attr.aria-label]="field.label + ' unit'">
                       @for (unit of field.unitOptions; track unit.value) {<option [ngValue]="unit.value">{{ unit.label }}</option>}
                     </select>
                   } @else {
@@ -41,7 +41,7 @@
             }
           </div>
           @if (calc.kind === 'gravel') {
-            <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">US ton</option><option [ngValue]="1">cubic yard</option></select></label>
+            <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">{{ unitSystem() === 'metric' ? 'metric tonne' : 'US ton' }}</option><option [ngValue]="1">{{ unitSystem() === 'metric' ? 'cubic meter' : 'cubic yard' }}</option></select></label>
           }
           @if (calc.kind === 'tile') {
             <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">tile</option><option [ngValue]="1">box</option></select></label>
@@ -54,7 +54,7 @@
       <aside class="results-card" aria-live="polite" aria-atomic="true">
         <div class="result-heading"><span class="result-icon" aria-hidden="true">✓</span><div><p class="eyebrow">YOUR ESTIMATE</p><h2>Project results</h2></div></div>
         @if (result(); as estimate) {
-          <p class="result-summary">{{ estimate.summary }}</p>
+          <p class="result-summary">{{ resultSummary() }}</p>
           <dl class="result-list">@for (row of formattedRows(); track row.label) {<div><dt>{{ row.label }}<small>{{ row.detail }}</small></dt><dd>{{ row.displayValue }}</dd></div>}</dl>
           <div class="result-actions"><button class="text-button" type="button" (click)="copyResults()">{{ copied() ? 'Copied to clipboard ✓' : 'Copy results' }}</button><button class="text-button" type="button" (click)="printResults()">Print</button></div>
         } @else {
