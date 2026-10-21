@@ -1,0 +1,57 @@
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="eyebrow-line"></span> MADE FOR YOUR NEXT PROJECT</p>
+      <h1>Free Construction &amp; Home Improvement Calculators</h1>
+      <p class="hero-lede">Get a clear estimate of the materials your project needs—so you can plan the next step with confidence.</p>
+      <div class="hero-actions"><a class="button" routerLink="/calculators">Explore calculators <span aria-hidden="true">→</span></a><a class="text-link" routerLink="/guides">Browse material guides <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <div class="hero-art" aria-label="Illustration of a simple home and construction plans">
+      <div class="plan-grid"></div>
+      <div class="sun-disc"></div>
+      <div class="house-illustration"><div class="roof"></div><div class="house-body"><div class="window"></div><div class="door"></div></div><div class="house-base"></div></div>
+      <div class="measure-card"><span class="measure-icon">↗</span><span><b>Measure twice.</b><small>Plan once.</small></span><span class="measure-check">✓</span></div>
+      <div class="art-label">A good project starts with a good estimate.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section calculator-showcase">
+  <div class="container">
+    <div class="section-heading split-heading"><div><p class="eyebrow">THE RIGHT TOOL FOR THE JOB</p><h2>Start with a solid estimate</h2></div><a class="text-link" routerLink="/calculators">View all calculators <span aria-hidden="true">→</span></a></div>
+    <label class="search-box"><span aria-hidden="true">⌕</span><input type="search" [value]="search()" (input)="onSearchInput($event)" placeholder="What are you working on?" aria-label="Search calculators by name, category, or keyword"></label>
+    @if (matches().length) {
+      <div class="card-grid">
+        @for (calculator of matches(); track calculator.slug) {
+          <a class="calculator-card" [routerLink]="['/calculators', calculator.slug]">
+            <span class="card-icon" [attr.data-kind]="calculator.kind" aria-hidden="true">{{ iconFor(calculator.kind) }}</span>
+            <span class="card-category">{{ calculator.category }}</span><h3>{{ calculator.title }}</h3><p>{{ calculator.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="empty-state"><h3>No calculators found</h3><p>Try another project name or material, such as “paint” or “landscaping.”</p></div>
+    }
+  </div>
+</section>
+
+<section class="category-band">
+  <div class="container"><div class="section-heading"><p class="eyebrow">BUILT AROUND YOUR PROJECT</p><h2>Explore by category</h2></div>
+    <div class="category-list">@for (category of categories; track category) {<a [routerLink]="['/calculators']" [queryParams]="{ category }"><span>{{ category }}</span><span aria-hidden="true">↗</span></a>}</div>
+  </div>
+</section>
+
+<section class="section how-section"><div class="container how-grid">
+  <div><p class="eyebrow">SIMPLE BY DESIGN</p><h2>From measurements to a smarter plan</h2><p class="muted">Take a few measurements, choose realistic assumptions, and use the estimate as a starting point for a supplier conversation.</p><a class="text-link" routerLink="/about">Learn about BuildCalc <span aria-hidden="true">→</span></a></div>
+  <ol class="steps"><li><span>01</span><div><h3>Choose your project</h3><p>Find a calculator that fits the material and work you have in mind.</p></div></li><li><span>02</span><div><h3>Enter your measurements</h3><p>Use the units shown and adjust assumptions to match your project.</p></div></li><li><span>03</span><div><h3>Review your estimate</h3><p>Understand the calculation, then confirm product details with your supplier.</p></div></li></ol>
+</div></section>
+
+<section class="ad-slot-wrap"><div class="container"><div class="ad-slot" aria-label="Reserved advertising space">Reserved for future advertising</div></div></section>
+
+<section class="section guide-teaser"><div class="container guide-panel"><div><p class="eyebrow">BETTER ESTIMATES, BETTER PROJECTS</p><h2>Leave room for the details</h2><p>Cutting, uneven surfaces, and product coverage can all change how much material you need. A small allowance can help, but always check the manufacturer’s coverage and confirm quantities with your supplier.</p></div><a class="button button-outline" routerLink="/guides">Read material guides <span aria-hidden="true">→</span></a></div></section>
+
+<section class="section faq-section"><div class="container faq-grid"><div><p class="eyebrow">GOOD TO KNOW</p><h2>Frequently asked questions</h2><p class="muted">A few helpful notes before you get started.</p></div><div class="faq-list">
+  <details><summary>Are BuildCalc estimates exact?</summary><p>No. They are arithmetic estimates based on the measurements and assumptions you provide. Product coverage, material density, site conditions, and cutting waste vary.</p></details>
+  <details><summary>Should I add extra material?</summary><p>Many projects need some allowance for cuts, spillage, or uneven areas. Choose an allowance that suits the project and verify it with product instructions or a qualified supplier.</p></details>
+  <details><summary>Are my measurements sent to a server?</summary><p>No. Calculations run in your browser. BuildCalc does not send calculator inputs to a server.</p></details>
+</div></div></section>

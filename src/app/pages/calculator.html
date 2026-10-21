@@ -1,0 +1,72 @@
+@if (calculator(); as calc) {
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><a routerLink="/calculators">Calculators</a><span aria-hidden="true">/</span><span aria-current="page">{{ calc.shortTitle }}</span></nav>
+    <section class="calculator-intro">
+      <p class="eyebrow">{{ calc.category }}</p>
+      <h1>{{ calc.title }}</h1>
+      <p>{{ calc.intro }}</p>
+    </section>
+    <section class="calculator-layout" aria-label="{{ calc.title }} form and estimate">
+      <form class="calculator-form" (ngSubmit)="calculate()">
+        <div class="form-heading"><span class="step-number">01</span><div><h2>Your measurements</h2><p>Enter your project details below.</p></div></div>
+        @if (calc.kind === 'area') {
+          <div class="room-list">
+            @for (area of areas(); track $index; let index = $index) {
+              <div class="room-row">
+                <div class="room-row-title"><strong>Area {{ index + 1 }}</strong>@if (areas().length > 1) {<button class="remove-button" type="button" (click)="removeArea(index)" aria-label="Remove area {{ index + 1 }}">Remove</button>}</div>
+                <label class="form-field"><span>Length</span><div class="input-with-unit"><input type="number" min="0.01" step="any" [ngModel]="area.length" (ngModelChange)="setAreaValue(index, 'length', $event)" [name]="'length-' + index" required><span class="unit">{{ area.unit }}</span></div></label>
+                <label class="form-field"><span>Width</span><div class="input-with-unit"><input type="number" min="0.01" step="any" [ngModel]="area.width" (ngModelChange)="setAreaValue(index, 'width', $event)" [name]="'width-' + index" required><span class="unit">{{ area.unit }}</span></div></label>
+                <label class="form-field"><span>Measurement unit</span><select [value]="area.unit" (change)="setAreaUnit(index, $event)"><option value="ft">Feet</option><option value="in">Inches</option></select></label>
+              </div>
+            }
+          </div>
+          <button class="text-button add-area" type="button" (click)="addArea()">＋ Add another area</button>
+        } @else {
+          <div class="fields-grid">
+            @for (field of fields(); track field.key) {
+              <label class="form-field">
+                <span>{{ field.label }} @if (field.optional) {<span class="optional">(optional)</span>}</span>
+                <div class="input-with-unit">
+                  <input type="number" [min]="field.min" [step]="field.step" [ngModel]="values()[field.key]" (ngModelChange)="setValue(field.key, $event)" [name]="field.key" [required]="!field.optional">
+                  <span class="unit">{{ field.unit }}</span>
+                </div>
+                @if (field.hint) {<small>{{ field.hint }}</small>}
+              </label>
+            }
+          </div>
+          @if (calc.kind === 'gravel') {
+            <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">US ton</option><option [ngValue]="1">cubic yard</option></select></label>
+          }
+          @if (calc.kind === 'tile') {
+            <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">tile</option><option [ngValue]="1">box</option></select></label>
+          }
+        }
+        @if (error()) {<p class="form-error" role="alert">{{ error() }}</p>}
+        <div class="form-actions"><button class="button" type="submit">Calculate estimate <span aria-hidden="true">→</span></button><button class="button button-quiet" type="button" (click)="reset()">Reset</button></div>
+        <p class="privacy-note"><span aria-hidden="true">◇</span> Your measurements stay in your browser.</p>
+      </form>
+      <aside class="results-card" aria-live="polite" aria-atomic="true">
+        <div class="result-heading"><span class="result-icon" aria-hidden="true">✓</span><div><p class="eyebrow">YOUR ESTIMATE</p><h2>Project results</h2></div></div>
+        @if (result(); as estimate) {
+          <p class="result-summary">{{ estimate.summary }}</p>
+          <dl class="result-list">@for (row of formattedRows(); track row.label) {<div><dt>{{ row.label }}<small>{{ row.detail }}</small></dt><dd>{{ row.displayValue }}</dd></div>}</dl>
+          <div class="result-actions"><button class="text-button" type="button" (click)="copyResults()">{{ copied() ? 'Copied to clipboard ✓' : 'Copy results' }}</button><button class="text-button" type="button" (click)="printResults()">Print</button></div>
+        } @else {
+          <p class="result-placeholder">Your estimate will appear here once you calculate.</p>
+          <div class="sample-result"><span class="sample-label">A quick example</span><p>{{ calc.example }}</p></div>
+        }
+        <p class="estimate-caveat">Planning estimate only. Verify product coverage, dimensions, and order quantities with your supplier.</p>
+      </aside>
+    </section>
+    <section class="calculator-notes">
+      <article><p class="eyebrow">HOW IT WORKS</p><h2>The calculation</h2><p>{{ calc.formula }}</p></article>
+      <article class="notice-card"><span class="notice-mark" aria-hidden="true">i</span><div><h2>Keep in mind</h2><p>{{ limitationFor(calc.kind) }}</p></div></article>
+    </section>
+    <section class="faq-section calculator-faq"><p class="eyebrow">COMMON QUESTIONS</p><h2>About {{ calc.shortTitle.toLowerCase() }} estimates</h2>
+      <div class="faq-list">@for (faq of calc.faqs; track faq.question) {<details><summary>{{ faq.question }}</summary><p>{{ faq.answer }}</p></details>}</div>
+    </section>
+    <section class="related-section"><div><p class="eyebrow">KEEP PLANNING</p><h2>Related calculators</h2></div><div class="related-links">@for (related of relatedCalculators(calc.slug); track related.slug) {<a [routerLink]="['/calculators', related.slug]">{{ related.title }} <span aria-hidden="true">↗</span></a>}</div></section>
+  </div>
+} @else {
+  <section class="page-hero"><div class="container"><h1>Calculator not found</h1><p>This calculator may have moved. Browse all available calculators.</p><a class="button" routerLink="/calculators">All calculators <span aria-hidden="true">→</span></a></div></section>
+}

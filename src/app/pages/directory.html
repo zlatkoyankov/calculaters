@@ -1,0 +1,24 @@
+<section class="page-hero">
+  <div class="container"><p class="eyebrow">BUILD WITH A PLAN</p><h1>Construction calculators</h1><p>Practical estimates for common home improvement, renovation, and landscaping materials.</p></div>
+</section>
+<section class="section directory-section">
+  <div class="container">
+    <div class="directory-controls">
+      <label class="search-box"><span aria-hidden="true">⌕</span><input type="search" [value]="search()" (input)="onSearchInput($event)" placeholder="Search calculators" aria-label="Search calculators"></label>
+      <label class="select-label"><span>Category</span><select [value]="category()" (change)="onCategoryChange($event)"><option value="">All categories</option>@for (item of categories; track item) {<option [value]="item">{{ item }}</option>}</select></label>
+    </div>
+    <p class="result-count" aria-live="polite">{{ matches().length }} calculator{{ matches().length === 1 ? '' : 's' }}</p>
+    @if (matches().length) {
+      <div class="card-grid">
+        @for (calculator of matches(); track calculator.slug) {
+          <a class="calculator-card" [routerLink]="['/calculators', calculator.slug]">
+            <span class="card-icon" [attr.data-kind]="calculator.kind" aria-hidden="true">{{ iconFor(calculator.kind) }}</span>
+            <span class="card-category">{{ calculator.category }}</span><h2>{{ calculator.title }}</h2><p>{{ calculator.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="empty-state"><h2>No calculators match those filters</h2><p>Try a broader search or choose “All categories.”</p><button class="button button-outline" type="button" (click)="search.set(''); category.set('')">Clear filters</button></div>
+    }
+  </div>
+</section>

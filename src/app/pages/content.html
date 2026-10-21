@@ -1,0 +1,26 @@
+<section class="page-hero content-hero"><div class="container"><nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ page.title }}</span></nav><p class="eyebrow">{{ page.kicker }}</p><h1>{{ page.title }}</h1><p>{{ page.intro }}</p></div></section>
+<section class="section content-section"><div class="container content-layout"><aside class="content-aside"><span class="aside-label">EXPLORE</span><a routerLink="/calculators">All calculators <span aria-hidden="true">→</span></a><a routerLink="/guides">Material guides <span aria-hidden="true">→</span></a></aside>
+  <div class="prose">
+    @if (guides) {
+      @for (calculator of guideCalculators; track calculator.slug) {
+        <article class="guide-link-card"><div><p class="eyebrow">{{ calculator.category }}</p><h2><a [routerLink]="['/guides', calculator.slug + '-guide']">{{ calculator.shortTitle }} planning guide</a></h2><p>{{ calculator.description }} Read the guide for practical assumptions and supplier questions.</p></div><a class="card-arrow" [routerLink]="['/guides', calculator.slug + '-guide']" [attr.aria-label]="'Read ' + calculator.shortTitle + ' guide'">↗</a></article>
+      }
+      <h2>Material quantities are estimates</h2><p>Package sizes and product specifications vary. Always check the label or supplier listing and confirm the quantity before ordering.</p>
+    } @else {
+      @for (section of page.sections; track section.title) {
+        <section><h2>{{ section.title }}</h2>@for (paragraph of section.paragraphs; track paragraph) {<p>{{ paragraph }}</p>}</section>
+      }
+    }
+    @if (contact) {
+      <form class="contact-form" (ngSubmit)="submitContact()">
+        <label class="form-field"><span>Your name</span><input type="text" name="name" autocomplete="name" required></label>
+        <label class="form-field"><span>Email address</span><input type="email" name="email" autocomplete="email" required></label>
+        <label class="form-field"><span>Your message</span><textarea name="message" rows="5" required></textarea></label>
+        <p class="contact-warning">This form does not send or store your message. Message delivery requires a contact integration.</p>
+        <button class="button" type="submit">Check message status <span aria-hidden="true">→</span></button>
+        @if (contactNotice()) {<p class="form-error" role="status">No message was sent. Connect a message-delivery service to enable contact submissions.</p>}
+      </form>
+    }
+    @if (pageKey === 'privacy') {<div class="notice-card"><span class="notice-mark" aria-hidden="true">i</span><div><h2>Before production</h2><p>Update this policy to reflect the actual analytics, advertising, cookies, and third-party services used on the live site.</p></div></div>}
+  </div>
+</div></section>

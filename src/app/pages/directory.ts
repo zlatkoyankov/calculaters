@@ -1,0 +1,40 @@
+import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CALCULATORS, CATEGORIES } from '../data/calculators';
+
+@Component({
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './directory.html',
+})
+export class DirectoryPage {
+  private readonly route = inject(ActivatedRoute);
+  protected readonly calculators = CALCULATORS;
+  protected readonly categories = CATEGORIES;
+  protected readonly search = signal('');
+  protected readonly category = signal('');
+  protected readonly matches = computed(() => {
+    const query = this.search().trim().toLowerCase();
+    const category = this.category();
+    return CALCULATORS.filter((item) =>
+      (!category || item.category === category)
+      && (!query || [item.title, item.category, item.description, ...item.keywords].join(' ').toLowerCase().includes(query)),
+    );
+  });
+
+  constructor() {
+    this.category.set(this.route.snapshot.queryParamMap.get('category') ?? '');
+  }
+
+  protected onSearchInput(event: Event): void {
+    this.search.set((event.target as HTMLInputElement).value);
+  }
+
+  protected onCategoryChange(event: Event): void {
+    this.category.set((event.target as HTMLSelectElement).value);
+  }
+
+  protected iconFor(kind: string): string {
+    return ({ gravel: 'G', paint: 'P', tile: 'T', concrete: 'C', area: 'A', mulch: 'M' } as Record<string, string>)[kind] ?? 'B';
+  }
+}
