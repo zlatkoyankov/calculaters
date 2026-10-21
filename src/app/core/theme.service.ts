@@ -16,7 +16,7 @@ export class ThemeService {
   constructor() {
     effect(() => {
       const theme = this.theme();
-      this.document.documentElement.dataset['theme'] = theme;
+      this.document.documentElement.setAttribute('data-theme', theme);
       this.document
         .querySelector('meta[name="theme-color"]')
         ?.setAttribute('content', theme === 'dark' ? '#17271e' : '#f1f5ef');
