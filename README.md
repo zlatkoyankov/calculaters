@@ -131,3 +131,7 @@ Colors and fonts follow the project-hub palette (green ink, soft paper, coral ac
 ## Shared design system
 
 Tokens, base frame and theme logic live in `design-system/` (see its README) so other projects can reuse the same style. `tokens.css` is loaded from `angular.json`.
+
+## Deployment
+
+The site is published at `https://zyankov.eu/calculators`. Build with `npm run build:prod`, which sets `--base-href /calculators/`. Canonical URLs, Open Graph, JSON-LD and the sitemap use `SITE_BASE_URL` in `src/app/core/seo.service.ts`. Image paths are relative so they work under the sub-path.

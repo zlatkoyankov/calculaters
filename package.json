@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --base-href /calculators/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:buildcalc": "node dist/buildcalc/server/server.mjs"

@@ -4,8 +4,8 @@ import { ActivatedRouteSnapshot } from '@angular/router';
 import { CALCULATORS } from '../data/calculators';
 import { GUIDES } from '../data/guides';
 
-// Set to the production origin (for example https://www.example.com) before launch.
-export const SITE_BASE_URL: string = '';
+// Public origin plus the sub-path the app is deployed under.
+export const SITE_BASE_URL: string = 'https://zyankov.eu/calculators';
 const SITE_NAME = 'BuildCalc';
 const JSON_LD_ID = 'buildcalc-json-ld';
 
@@ -18,7 +18,7 @@ export class SeoService {
     while (route.firstChild) route = route.firstChild;
     const title = route.title ?? 'BuildCalc | Plan smarter. Build with confidence.';
     const description = route.data['description'] as string | undefined;
-    const path = this.currentPath();
+    const path = '/' + route.pathFromRoot.flatMap((r) => r.url.map((segment) => segment.path)).join('/');
     this.document.title = title;
     if (description) this.setMeta('description', description);
     this.setMeta('og:title', title, 'property');
@@ -44,10 +44,6 @@ export class SeoService {
     if (canonicalUrl) this.setMeta('og:url', canonicalUrl, 'property');
 
     this.setJsonLd(this.structuredData(path, title, description));
-  }
-
-  private currentPath(): string {
-    return (this.document.location?.pathname ?? '/').replace(/\/+$/, '') || '/';
   }
 
   private absolute(path: string): string {

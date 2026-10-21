@@ -25,5 +25,5 @@ import { Component, computed, input } from '@angular/core';
 export class MaterialArtComponent {
   readonly kind = input.required<string>();
   readonly eager = input(false);
-  protected readonly src = computed(() => `/images/${this.kind()}.webp`);
+  protected readonly src = computed(() => `images/${this.kind()}.webp`);
 }

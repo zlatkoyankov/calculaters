@@ -277,7 +277,7 @@ p {
   background:
     linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 45%, color-mix(in srgb, var(--bg) 55%, transparent) 100%),
     linear-gradient(0deg, var(--bg) 0%, transparent 35%),
-    url('/images/hero.webp') center / cover no-repeat;
+    var(--hero-img) center / cover no-repeat;
 }
 
 .accent-text {

@@ -74,7 +74,7 @@ export class ContentPage {
     : this.isGuideIndex
       ? { title: 'Material guides', kicker: 'PROJECT KNOW-HOW', intro: 'Understand the assumptions behind common material estimates and learn what to confirm before placing an order.', sections: [] }
       : PAGES[this.pageKey] ?? PAGES['disclaimer'];
-  protected readonly bannerImage = `url(/images/${this.guide?.kind ?? 'hero'}.webp)`;
+  protected readonly bannerImage = `url(images/${this.guide?.kind ?? 'hero'}.webp)`;
   protected readonly contact = this.pageKey === 'contact';
   protected readonly contactNotice = signal(false);
 
