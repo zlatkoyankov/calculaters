@@ -8,6 +8,7 @@ import { GUIDES } from '../data/guides';
 export const SITE_BASE_URL: string = 'https://zyankov.eu/calculators';
 const SITE_NAME = 'BuildCalc';
 const JSON_LD_ID = 'buildcalc-json-ld';
+const SECTION_NAMES: Record<string, string> = { calculators: 'Calculators', guides: 'Material guides' };
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -43,7 +44,7 @@ export class SeoService {
     }
     if (canonicalUrl) this.setMeta('og:url', canonicalUrl, 'property');
 
-    this.setJsonLd(this.structuredData(path, title, description));
+    this.setJsonLd(route.data['noindex'] ? [] : this.structuredData(path, title, description));
   }
 
   private absolute(path: string): string {
@@ -97,7 +98,7 @@ export class SeoService {
           ...crumbs.map((_, index) => ({
             '@type': 'ListItem',
             position: index + 2,
-            name: index === crumbs.length - 1 ? title.replace(` | ${SITE_NAME}`, '') : crumbs[index],
+            name: index === crumbs.length - 1 ? title.replace(` | ${SITE_NAME}`, '') : SECTION_NAMES[crumbs[index]] ?? crumbs[index],
             item: this.absolute(`/${crumbs.slice(0, index + 1).join('/')}`),
           })),
         ],

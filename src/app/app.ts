@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -11,6 +12,7 @@ import { UnitPreferenceService } from './core/unit-preference.service';
   templateUrl: './app.html',
 })
 export class App {
+  private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
   protected readonly units = inject(UnitPreferenceService);
@@ -28,6 +30,11 @@ export class App {
 
   protected toggleMenu(): void {
     this.menuOpen.update((open) => !open);
+  }
+
+  protected skipToMain(event: Event): void {
+    event.preventDefault();
+    this.document.getElementById('main')?.focus();
   }
 
   protected closeMenu(): void {

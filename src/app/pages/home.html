@@ -8,7 +8,7 @@
       <ul class="trust-list"><li>Free</li><li>No sign-up</li><li>Runs in your browser</li><li>US &amp; metric</li></ul>
       <div class="hero-actions"><a class="button" routerLink="/calculators">Explore calculators <span aria-hidden="true">→</span></a><a class="text-link" routerLink="/guides">Browse material guides <span aria-hidden="true">↗</span></a></div>
     </div>
-    <div class="hero-art" aria-label="Collage of construction materials: concrete, paint, tile, gravel and mulch">
+    <div class="hero-art" role="img" aria-label="Collage of construction materials: concrete, paint, tile, gravel and mulch">
       <app-material-art class="tile tile-a" kind="concrete" [eager]="true" />
       <app-material-art class="tile tile-b" kind="paint" [eager]="true" />
       <app-material-art class="tile tile-c" kind="tile" [eager]="true" />
@@ -25,9 +25,9 @@
     <label class="search-box"><span aria-hidden="true">⌕</span><input type="search" [value]="search()" (input)="onSearchInput($event)" placeholder="What are you working on?" aria-label="Search calculators by name, category, or keyword"></label>
     @if (matches().length) {
       <div class="card-grid">
-        @for (calculator of matches(); track calculator.slug) {
+        @for (calculator of matches(); track calculator.slug; let i = $index) {
           <a class="calculator-card" [routerLink]="['/calculators', calculator.slug]">
-            <app-material-art class="card-art" [kind]="calculator.kind" />
+            <app-material-art class="card-art" [kind]="calculator.kind" [eager]="i < 3" />
             <span class="card-category">{{ calculator.category }}</span><h3>{{ calculator.title }}</h3><p>{{ calculator.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
           </a>
         }
@@ -49,7 +49,7 @@
   <ol class="steps"><li><span>01</span><div><h3>Choose your project</h3><p>Find a calculator that fits the material and work you have in mind.</p></div></li><li><span>02</span><div><h3>Enter your measurements</h3><p>Use the units shown and adjust assumptions to match your project.</p></div></li><li><span>03</span><div><h3>Review your estimate</h3><p>Understand the calculation, then confirm product details with your supplier.</p></div></li></ol>
 </div></section>
 
-<section class="ad-slot-wrap"><div class="container"><div class="ad-slot" aria-label="Reserved advertising space">Reserved for future advertising</div></div></section>
+<app-ad-slot />
 
 <section class="section guide-teaser"><div class="container guide-panel"><div><p class="eyebrow">BETTER ESTIMATES, BETTER PROJECTS</p><h2>Leave room for the details</h2><p>Cutting, uneven surfaces, and product coverage can all change how much material you need. A small allowance can help, but always check the manufacturer’s coverage and confirm quantities with your supplier.</p></div><a class="button button-outline" routerLink="/guides">Read material guides <span aria-hidden="true">→</span></a></div></section>
 

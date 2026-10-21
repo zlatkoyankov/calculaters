@@ -3,9 +3,9 @@
   <div class="prose">
     @if (isGuideIndex) {
       <div class="guide-grid">
-        @for (item of guides; track item.slug) {
+        @for (item of guides; track item.slug; let i = $index) {
           <a class="calculator-card" [routerLink]="['/guides', item.slug]">
-            <app-material-art class="card-art" [kind]="item.kind" />
+            <app-material-art class="card-art" [kind]="item.kind" [eager]="i < 3" />
             <span class="card-category">{{ item.kicker }}</span><h2>{{ item.title }}</h2><p>{{ item.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
           </a>
         }
@@ -32,3 +32,4 @@
     @if (pageKey === 'privacy') {<div class="notice-card"><span class="notice-mark" aria-hidden="true">i</span><div><h2>Before production</h2><p>Update this policy to reflect the actual analytics, advertising, cookies, and third-party services used on the live site.</p></div></div>}
   </div>
 </div></section>
+@if (guide) {<app-ad-slot />}

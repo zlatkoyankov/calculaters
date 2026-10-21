@@ -29,6 +29,7 @@ export const routes: Routes = [
   },
   {
     path: 'calculators/:slug',
+    canMatch: [(_route: Route, segments: UrlSegment[]) => CALCULATORS.some((calculator) => calculator.slug === segments[1]?.path)],
     loadComponent: () => import('./pages/calculator').then((module) => module.CalculatorPage),
     title: (route) => `${calculatorForRoute(route)?.title ?? 'Calculator'} | BuildCalc`,
     resolve: { description: calculatorDescriptionResolver },

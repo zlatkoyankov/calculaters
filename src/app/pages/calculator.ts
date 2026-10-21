@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
+import { AdSlotComponent } from '../shared/ad-slot.component';
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
@@ -25,6 +26,9 @@ interface AreaEntry {
   width: number;
   unit: 'ft' | 'in' | 'm' | 'cm';
 }
+
+// Trims floating-point noise (6.096000000024) from converted input values.
+const tidy = (value: number): number => Number(value.toPrecision(8));
 
 const DISTANCE_UNITS = [
   { value: 0, label: 'ft' },
@@ -107,7 +111,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
 
 @Component({
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, AdSlotComponent],
   templateUrl: './calculator.html',
 })
 export class CalculatorPage {
@@ -138,7 +142,9 @@ export class CalculatorPage {
       }))
       : [];
   });
-  protected readonly formattedRows = computed(() => (this.result()?.rows ?? []).map((row) => {
+  protected readonly formattedRows = computed(() => (this.result()?.rows ?? [])
+    .filter((row) => !(this.unitPreference.system() === 'metric' && row.label === 'Metric equivalent'))
+    .map((row) => {
     const converted = this.convertResultRow(row);
     return { ...converted, displayValue: this.formatRow(converted) };
   }));
@@ -146,6 +152,7 @@ export class CalculatorPage {
     const result = this.result();
     const calculator = this.calculator();
     if (!result || !calculator || this.unitPreference.system() === 'us') return result?.summary ?? '';
+    if (calculator.kind === 'area') return `${this.formattedRows().find((row) => row.label === 'Combined area')?.displayValue ?? ''} combined.`;
     const rows = this.formattedRows();
     const volume = rows.find((row) => row.label === 'Volume with waste');
     const weight = rows.find((row) => row.label === 'Estimated weight');
@@ -193,8 +200,8 @@ export class CalculatorPage {
       for (const valueKey of valueKeys) {
         const currentValue = this.number(current, valueKey);
         if (unitKey === 'openingsUnit') updated[valueKey] = this.convertArea(currentValue, previousUnit, nextUnit);
-        else if (unitKey === 'densityUnit') updated[valueKey] = previousUnit === 0 ? currentValue * 0.593276 : currentValue / 0.593276;
-        else if (unitKey === 'coverageUnit') updated[valueKey] = previousUnit === 0 ? currentValue / 40.745 : currentValue * 40.745;
+        else if (unitKey === 'densityUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue * 0.593276 : currentValue / 0.593276);
+        else if (unitKey === 'coverageUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue / 40.745 : currentValue * 40.745);
         else updated[valueKey] = this.convertLength(currentValue, previousUnit, nextUnit);
       }
       updated[unitKey] = nextUnit;
@@ -217,6 +224,7 @@ export class CalculatorPage {
         case 'area': estimate = calculateArea(this.areas()); break;
       }
       this.result.set(estimate);
+      this.copied.set(false);
     } catch (error: unknown) {
       this.result.set(null);
       this.error.set(error instanceof Error ? error.message : 'Please check your measurements and try again.');
@@ -316,6 +324,7 @@ export class CalculatorPage {
       if (!navigator.clipboard) throw new Error('Clipboard access is unavailable.');
       await navigator.clipboard.writeText(summary);
       this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 2500);
     } catch {
       this.error.set('Your browser could not copy the results. Select and copy them manually.');
     }
@@ -348,12 +357,12 @@ export class CalculatorPage {
     }
     if (values['density'] !== undefined) {
       const current = this.number(values, 'density');
-      values['density'] = from === 'us' ? current * 0.593276 : current / 0.593276;
+      values['density'] = tidy(from === 'us' ? current * 0.593276 : current / 0.593276);
       values['densityUnit'] = to === 'us' ? 0 : 1;
     }
     if (values['coverage'] !== undefined) {
       const current = this.number(values, 'coverage');
-      values['coverage'] = from === 'us' ? current / 40.745 : current * 40.745;
+      values['coverage'] = tidy(from === 'us' ? current / 40.745 : current * 40.745);
       values['coverageUnit'] = to === 'us' ? 0 : 1;
     }
     const price = this.number(values, 'price');
@@ -362,11 +371,11 @@ export class CalculatorPage {
       const isMetric = to === 'metric';
       if (kind === 'gravel') {
         const rateFactor = values['priceUnit'] === 1 ? 1 / 0.764554858 : 1.10231131;
-        values['price'] = isMetric ? price * rateFactor : price / rateFactor;
+        values['price'] = tidy(isMetric ? price * rateFactor : price / rateFactor);
       } else if (kind === 'paint') {
-        values['price'] = isMetric ? price / 3.785411784 : price * 3.785411784;
+        values['price'] = tidy(isMetric ? price / 3.785411784 : price * 3.785411784);
       } else if (kind === 'concrete' || kind === 'mulch') {
-        values['price'] = isMetric ? price / 0.764554858 : price * 0.764554858;
+        values['price'] = tidy(isMetric ? price / 0.764554858 : price * 0.764554858);
       }
     }
     this.values.set(values);
@@ -394,18 +403,18 @@ export class CalculatorPage {
   private convertLength(value: number, fromUnit: number, toUnit: number): number {
     const feetByUnit: Record<number, number> = { 0: 1, 1: 1 / 12, 2: 3.280839895, 3: 1 / 30.48, 4: 1 / 304.8 };
     const feet = value * (feetByUnit[fromUnit] ?? 1);
-    return feet / (feetByUnit[toUnit] ?? 1);
+    return tidy(feet / (feetByUnit[toUnit] ?? 1));
   }
 
   private convertArea(value: number, fromUnit: number, toUnit: number): number {
     const sqFtByUnit: Record<number, number> = { 0: 1, 1: 1 / 144, 2: 10.7639104, 3: 1 / 929.0304 };
     const squareFeet = value * (sqFtByUnit[fromUnit] ?? 1);
-    return squareFeet / (sqFtByUnit[toUnit] ?? 1);
+    return tidy(squareFeet / (sqFtByUnit[toUnit] ?? 1));
   }
 
   private convertAreaLength(value: number, from: AreaEntry['unit'], to: AreaEntry['unit']): number {
     const feetByUnit: Record<AreaEntry['unit'], number> = { ft: 1, in: 1 / 12, m: 3.280839895, cm: 1 / 30.48 };
-    return value * feetByUnit[from] / feetByUnit[to];
+    return tidy(value * feetByUnit[from] / feetByUnit[to]);
   }
 
   private formatRow(row: EstimateRow): string {
@@ -424,12 +433,7 @@ export class CalculatorPage {
       'cu ft': { label: row.label, unit: 'cu m', factor: 0.0283168466, precision: 3 },
       'cu yd': { label: row.label, unit: 'cu m', factor: 0.764554858, precision: 3 },
       'US tons': { label: row.label, unit: 'metric tonnes', factor: 0.90718474, precision: 2 },
-      gallons: {
-        label: row.label === 'Whole-gallon purchase' ? 'Whole-liter purchase' : row.label,
-        unit: row.label === 'Whole-gallon purchase' ? 'L' : 'liters',
-        factor: row.label === 'Whole-gallon purchase' ? (value) => Math.ceil(value * 3.785411784) : 3.785411784,
-        precision: 2,
-      },
+      gallons: { label: row.label, unit: 'liters', factor: 3.785411784, precision: 2 },
     };
     const conversion = conversions[row.unit];
     if (!conversion) return row;

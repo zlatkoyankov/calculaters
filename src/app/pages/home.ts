@@ -1,11 +1,12 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AdSlotComponent } from '../shared/ad-slot.component';
 import { MaterialArtComponent } from '../shared/material-art.component';
 import { CALCULATORS, CATEGORIES, FEATURED_SLUGS } from '../data/calculators';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, MaterialArtComponent],
+  imports: [RouterLink, MaterialArtComponent, AdSlotComponent],
   templateUrl: './home.html',
 })
 export class HomePage {

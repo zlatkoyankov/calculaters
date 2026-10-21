@@ -104,4 +104,32 @@ describe('calculation utilities', () => {
     expect(() => calculateArea([{ length: -2, width: 5, unit: 'ft' }])).toThrow();
     expect(() => calculateMulch({ length: 10, width: 10, depth: Number.NaN, waste: 0, price: 0 })).toThrow();
   });
+
+  it('reports a metric paint purchase in whole liters that matches the cost basis', () => {
+    const result = calculatePaint({
+      width: 12, height: 8, openings: 0, coats: 2, coverage: 350, waste: 0, price: 10, metricPrice: true,
+    });
+    const purchase = result.rows.find((row) => row.label === 'Whole-liter purchase');
+    const cost = result.rows.find((row) => row.label === 'Estimated cost');
+    expect(purchase?.value).toBe(3);
+    expect(purchase?.unit).toBe('L');
+    expect(cost?.value).toBe(30);
+    expect(result.rows.some((row) => row.label === 'Whole-gallon purchase')).toBe(false);
+  });
+
+  it('rejects pricing by the box without a box size and negative box sizes', () => {
+    const base = { length: 10, width: 12, tileLength: 12, tileWidth: 12, grout: 0.125, waste: 10 };
+    expect(() => calculateTile({ ...base, boxSize: 0, price: 5, priceUnit: 1 })).toThrow(/tiles per box/i);
+    expect(() => calculateTile({ ...base, boxSize: -4 })).toThrow();
+    expect(calculateTile({ ...base, boxSize: 10, price: 5, priceUnit: 1 }).rows.find((row) => row.label === 'Estimated material cost')?.value).toBe(65);
+  });
+
+  it('converts centimeter and millimeter inputs to the same estimate as inches', () => {
+    const inches = calculateTile({ length: 10, width: 12, tileLength: 12, tileWidth: 12, grout: 0.125, waste: 0 });
+    const millimeters = calculateTile({
+      length: 10, width: 12, tileLength: 304.8, tileWidth: 304.8, grout: 3.175, waste: 0, tileUnit: 4, groutUnit: 4,
+    });
+    expect(millimeters.rows.find((row) => row.label === 'Estimated tiles')?.value)
+      .toBe(inches.rows.find((row) => row.label === 'Estimated tiles')?.value);
+  });
 });

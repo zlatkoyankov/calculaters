@@ -27,13 +27,11 @@ const angularApp = new AngularNodeAppEngine();
 /**
  * Serve static files from /browser
  */
-app.use(
-  express.static(browserDistFolder, {
-    maxAge: '1y',
-    index: false,
-    redirect: false,
-  }),
-);
+// The app is deployed under a sub-path (see `npm run build:prod`), so static files are served there too.
+const staticOptions = { maxAge: '1y', index: false, redirect: false };
+const basePath = process.env['BASE_PATH'] ?? '/calculators';
+app.use(basePath, express.static(browserDistFolder, staticOptions));
+app.use(express.static(browserDistFolder, staticOptions));
 
 /**
  * Handle all other requests by rendering the Angular application.

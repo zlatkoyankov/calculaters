@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { GUIDES, Guide } from '../data/guides';
+import { AdSlotComponent } from '../shared/ad-slot.component';
 import { MaterialArtComponent } from '../shared/material-art.component';
 
 interface ContentSection {
@@ -60,7 +61,7 @@ const PAGES: Record<string, PageContent> = {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, FormsModule, MaterialArtComponent],
+  imports: [RouterLink, FormsModule, MaterialArtComponent, AdSlotComponent],
   templateUrl: './content.html',
 })
 export class ContentPage {

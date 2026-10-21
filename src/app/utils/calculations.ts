@@ -168,7 +168,9 @@ export function calculatePaint(values: PaintInput): Estimate {
       { label: 'Net wall area', value: net, unit: 'sq ft', precision: 2 },
       { label: 'Coverage across coats', value: coverArea, unit: 'sq ft', precision: 2 },
       { label: 'Estimated paint', value: gallons, unit: 'gallons', precision: 2 },
-      { label: 'Whole-gallon purchase', value: Math.ceil(gallons), unit: 'gallons', precision: 0, detail: 'rounded up for purchasing' },
+      values.metricPrice
+        ? { label: 'Whole-liter purchase', value: purchaseQuantity, unit: 'L', precision: 0, detail: 'rounded up for purchasing' }
+        : { label: 'Whole-gallon purchase', value: Math.ceil(gallons), unit: 'gallons', precision: 0, detail: 'rounded up for purchasing' },
       ...(price > 0 ? [{ label: 'Estimated cost', value: purchaseQuantity * price, unit: 'USD', precision: 2 }] : []),
     ],
     summary: values.metricPrice
@@ -184,6 +186,7 @@ export function calculateTile(values: TileInput): Estimate {
   positive(values.tileWidth, 'Tile width');
   nonNegative(values.grout, 'Grout spacing');
   nonNegative(values.waste, 'Waste allowance');
+  nonNegative(values.boxSize ?? 0, 'Tiles per box');
 
   const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
   const roomArea = values.length * dimensionFactor * values.width * dimensionFactor;
@@ -196,7 +199,8 @@ export function calculateTile(values: TileInput): Estimate {
   const boxes = (values.boxSize ?? 0) > 0 ? Math.ceil(tiles / (values.boxSize ?? 0)) : 0;
   const price = values.price ?? 0;
   nonNegative(price, 'Price');
-  const cost = price > 0 ? price * (values.priceUnit === 1 && boxes > 0 ? boxes : tiles) : null;
+  if (price > 0 && values.priceUnit === 1 && boxes === 0) throw new Error('Enter tiles per box to price by the box.');
+  const cost = price > 0 ? price * (values.priceUnit === 1 ? boxes : tiles) : null;
 
   return {
     rows: [

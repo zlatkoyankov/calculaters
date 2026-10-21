@@ -1,5 +1,5 @@
-<a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header">
+<a class="skip-link" href="#main" (click)="skipToMain($event)">Skip to content</a>
+<header class="site-header" (keydown.escape)="closeMenu()">
   <div class="header-inner">
     <a class="brand" routerLink="/" aria-label="BuildCalc home">
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 15.5 16 5l12 10.5v12H4z"/><path d="M12 27.5V17h8v10.5M4 15.5l12 11 12-11"/></svg></span>
@@ -22,7 +22,7 @@
     </nav>
   </div>
 </header>
-<main id="main">
+<main id="main" tabindex="-1">
   <router-outlet />
 </main>
 <footer class="site-footer">

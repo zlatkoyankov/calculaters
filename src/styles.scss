@@ -587,6 +587,10 @@ p {
   color: #fff;
 }
 
+.brand-light span span {
+  color: #a9d3b8;
+}
+
 .brand-light .brand-mark {
   background: rgba(255, 255, 255, 0.15);
 }
@@ -670,7 +674,6 @@ p {
 .results-card,
 .notice-card,
 .content-layout .prose > section,
-.guide-link-card,
 .content-aside {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -755,6 +758,11 @@ p {
   border-radius: 0.7rem 0 0 0.7rem;
 }
 
+.field-controls > input:not(:has(+ select)) {
+  padding-right: 4.2rem;
+}
+
+.field-controls > .unit,
 .input-with-unit .unit {
   position: absolute;
   right: 0.7rem;
@@ -767,6 +775,10 @@ p {
 
 .form-field label {
   font-weight: 600;
+}
+
+.compact-select > span {
+  font-weight: 700;
 }
 
 .form-field small {
@@ -988,18 +1000,6 @@ p {
   padding: 1rem;
 }
 
-.guide-link-card {
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  text-decoration: none;
-}
-
-.guide-link-card h2 a {
-  text-decoration: none;
-}
-
 .contact-form {
   margin-top: 1rem;
   display: grid;
@@ -1058,7 +1058,7 @@ p {
   }
 }
 
-@media (max-width: 47.999rem) {
+@media (max-width: 63.999rem) {
   .menu-toggle {
     display: inline-flex;
     flex-direction: column;

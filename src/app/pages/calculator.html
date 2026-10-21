@@ -12,7 +12,7 @@
   </header>
   <div class="container">
     <section class="calculator-layout" aria-label="{{ calc.title }} form and estimate">
-      <form class="calculator-form" (ngSubmit)="calculate()">
+      <form class="calculator-form" (ngSubmit)="calculate()" [attr.aria-describedby]="error() ? 'form-error' : null">
         <div class="form-heading"><span class="step-number">01</span><div><h2>Your measurements</h2><p>Enter your project details below.</p></div></div>
         @if (calc.kind === 'area') {
           <div class="room-list">
@@ -32,7 +32,7 @@
               <div class="form-field">
                 <label [for]="'calc-' + field.key">{{ field.label }} @if (field.optional) {<span class="optional">(optional)</span>}</label>
                 <div class="field-controls">
-                  <input [id]="'calc-' + field.key" type="number" [min]="field.min" [step]="field.step" [ngModel]="values()[field.key]" (ngModelChange)="setValue(field.key, $event)" [name]="field.key" [required]="!field.optional">
+                  <input [id]="'calc-' + field.key" type="number" [min]="field.min" [step]="field.step" [ngModel]="values()[field.key]" (ngModelChange)="setValue(field.key, $event)" [name]="field.key" [required]="!field.optional" inputmode="decimal" [attr.aria-describedby]="field.hint ? 'hint-' + field.key : null">
                   @if (field.unitKey && field.unitOptions) {
                     <select [ngModel]="values()[field.unitKey]" (ngModelChange)="setUnitValue(field.unitKey!, $event)" [name]="field.unitKey + '-' + field.key" [attr.aria-label]="field.label + ' unit'">
                       @for (unit of field.unitOptions; track unit.value) {<option [ngValue]="unit.value">{{ unit.label }}</option>}
@@ -41,7 +41,7 @@
                     <span class="unit">{{ field.unit }}</span>
                   }
                 </div>
-                @if (field.hint) {<small>{{ field.hint }}</small>}
+                @if (field.hint) {<small [id]="'hint-' + field.key">{{ field.hint }}</small>}
               </div>
             }
           </div>
@@ -52,7 +52,7 @@
             <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">tile</option><option [ngValue]="1">box</option></select></label>
           }
         }
-        @if (error()) {<p class="form-error" role="alert">{{ error() }}</p>}
+        @if (error()) {<p class="form-error" id="form-error" role="alert">{{ error() }}</p>}
         <div class="form-actions"><button class="button" type="submit">Calculate estimate <span aria-hidden="true">→</span></button><button class="button button-quiet" type="button" (click)="reset()">Reset</button></div>
         <p class="privacy-note"><span aria-hidden="true">◇</span> Your measurements stay in your browser.</p>
       </form>
@@ -73,6 +73,7 @@
       <article><p class="eyebrow">HOW IT WORKS</p><h2>The calculation</h2><p>{{ calc.formula }}</p></article>
       <article class="notice-card"><span class="notice-mark" aria-hidden="true">i</span><div><h2>Keep in mind</h2><p>{{ limitationFor(calc.kind) }}</p></div></article>
     </section>
+    <app-ad-slot [contained]="false" />
     <section class="faq-section calculator-faq"><p class="eyebrow">COMMON QUESTIONS</p><h2>About {{ calc.shortTitle.toLowerCase() }} estimates</h2>
       <div class="faq-list">@for (faq of calc.faqs; track faq.question) {<details><summary>{{ faq.question }}</summary><p>{{ faq.answer }}</p></details>}</div>
     </section>

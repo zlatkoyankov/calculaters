@@ -1,3 +1,4 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MaterialArtComponent } from '../shared/material-art.component';
@@ -24,7 +25,7 @@ export class DirectoryPage {
   });
 
   constructor() {
-    this.category.set(this.route.snapshot.queryParamMap.get('category') ?? '');
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => this.category.set(params.get('category') ?? ''));
   }
 
   protected onSearchInput(event: Event): void {
