@@ -266,10 +266,18 @@ p {
 
 .hero {
   position: relative;
+  isolation: isolate;
   padding: 3.5rem 0 2.5rem;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background:
-    radial-gradient(60rem 28rem at 85% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent),
-    radial-gradient(40rem 24rem at -10% 20%, color-mix(in srgb, var(--coral) 12%, transparent), transparent);
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 45%, color-mix(in srgb, var(--bg) 55%, transparent) 100%),
+    linear-gradient(0deg, var(--bg) 0%, transparent 35%),
+    url('/images/hero.webp') center / cover no-repeat;
 }
 
 .accent-text {
@@ -357,19 +365,7 @@ p {
   background: color-mix(in srgb, var(--on-accent) 22%, transparent);
 }
 
-[data-kind='gravel'] { --k-bg: #ece8dc; --k-a: #c9c2b2; --k-b: #a39b88; --k-c: #6b665a; }
-[data-kind='paint'] { --k-bg: #e3eef6; --k-a: #8fbfe0; --k-b: #4f8fc0; --k-c: #2f5f86; }
-[data-kind='tile'] { --k-bg: #f6e6dd; --k-a: #f0b99f; --k-b: #e76d53; --k-c: #b5472f; }
-[data-kind='concrete'] { --k-bg: #e8ebe8; --k-a: #cfd5d0; --k-b: #aab2ac; --k-c: #7d8780; }
-[data-kind='area'] { --k-bg: #e6efe6; --k-a: #cde3d0; --k-b: #6fa27c; --k-c: #3f6b54; }
-[data-kind='mulch'] { --k-bg: #f1e8de; --k-a: #8fc08a; --k-b: #8a5f3d; --k-c: #5f3f27; }
 
-:root[data-theme='dark'] [data-kind='gravel'] { --k-bg: #2c2b26; --k-a: #8f8878; --k-b: #6b665a; --k-c: #4a463d; }
-:root[data-theme='dark'] [data-kind='paint'] { --k-bg: #1c2d3a; --k-a: #5f9fcc; --k-b: #3a76a5; --k-c: #28557a; }
-:root[data-theme='dark'] [data-kind='tile'] { --k-bg: #3a2620; --k-a: #d98a6e; --k-b: #c4573f; --k-c: #8f3b28; }
-:root[data-theme='dark'] [data-kind='concrete'] { --k-bg: #2a2f2c; --k-a: #8b948e; --k-b: #6a736d; --k-c: #4c544f; }
-:root[data-theme='dark'] [data-kind='area'] { --k-bg: #1f3329; --k-a: #3f6b54; --k-b: #5f9a76; --k-c: #8fc2a3; }
-:root[data-theme='dark'] [data-kind='mulch'] { --k-bg: #33281f; --k-a: #6fa56a; --k-b: #6e4a2f; --k-c: #4a3220; }
 
 .card-grid {
   display: grid;
@@ -408,7 +404,7 @@ p {
 }
 
 .card-art {
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 3 / 2;
   margin-bottom: 0.4rem;
 }
 

@@ -1,4 +1,5 @@
 <section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
   <div class="container hero-grid">
     <div class="hero-copy">
       <p class="eyebrow"><span class="eyebrow-line"></span> MADE FOR YOUR NEXT PROJECT</p>
@@ -8,11 +9,11 @@
       <div class="hero-actions"><a class="button" routerLink="/calculators">Explore calculators <span aria-hidden="true">→</span></a><a class="text-link" routerLink="/guides">Browse material guides <span aria-hidden="true">↗</span></a></div>
     </div>
     <div class="hero-art" aria-label="Collage of construction materials: concrete, paint, tile, gravel and mulch">
-      <app-material-art class="tile tile-a" data-kind="concrete" kind="concrete" />
-      <app-material-art class="tile tile-b" data-kind="paint" kind="paint" />
-      <app-material-art class="tile tile-c" data-kind="tile" kind="tile" />
-      <app-material-art class="tile tile-d" data-kind="gravel" kind="gravel" />
-      <app-material-art class="tile tile-e" data-kind="mulch" kind="mulch" />
+      <app-material-art class="tile tile-a" kind="concrete" [eager]="true" />
+      <app-material-art class="tile tile-b" kind="paint" [eager]="true" />
+      <app-material-art class="tile tile-c" kind="tile" [eager]="true" />
+      <app-material-art class="tile tile-d" kind="gravel" [eager]="true" />
+      <app-material-art class="tile tile-e" kind="mulch" [eager]="true" />
       <div class="measure-card"><span class="measure-icon" aria-hidden="true">✓</span><span><b>1.23 cu yd of concrete</b><small>Example: 10 × 10 ft slab, 4 in thick</small></span></div>
     </div>
   </div>
@@ -26,7 +27,7 @@
       <div class="card-grid">
         @for (calculator of matches(); track calculator.slug) {
           <a class="calculator-card" [routerLink]="['/calculators', calculator.slug]">
-            <app-material-art class="card-art" [attr.data-kind]="calculator.kind" [kind]="calculator.kind" />
+            <app-material-art class="card-art" [kind]="calculator.kind" />
             <span class="card-category">{{ calculator.category }}</span><h3>{{ calculator.title }}</h3><p>{{ calculator.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
           </a>
         }
