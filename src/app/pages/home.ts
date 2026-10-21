@@ -1,10 +1,11 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MaterialArtComponent } from '../shared/material-art.component';
 import { CALCULATORS, CATEGORIES, FEATURED_SLUGS } from '../data/calculators';
 
 @Component({
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MaterialArtComponent],
   templateUrl: './home.html',
 })
 export class HomePage {
@@ -23,10 +24,4 @@ export class HomePage {
     this.search.set((event.target as HTMLInputElement).value);
   }
 
-  protected iconFor(kind: string): string {
-    const icons: Record<string, string> = {
-      gravel: 'G', paint: 'P', tile: 'T', concrete: 'C', area: 'A', mulch: 'M',
-    };
-    return icons[kind] ?? 'B';
-  }
 }

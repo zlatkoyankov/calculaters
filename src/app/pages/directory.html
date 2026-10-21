@@ -12,7 +12,7 @@
       <div class="card-grid">
         @for (calculator of matches(); track calculator.slug) {
           <a class="calculator-card" [routerLink]="['/calculators', calculator.slug]">
-            <span class="card-icon" [attr.data-kind]="calculator.kind" aria-hidden="true">{{ iconFor(calculator.kind) }}</span>
+            <app-material-art class="card-art" [attr.data-kind]="calculator.kind" [kind]="calculator.kind" />
             <span class="card-category">{{ calculator.category }}</span><h2>{{ calculator.title }}</h2><p>{{ calculator.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
           </a>
         }

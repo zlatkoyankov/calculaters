@@ -2,16 +2,18 @@
   <div class="container hero-grid">
     <div class="hero-copy">
       <p class="eyebrow"><span class="eyebrow-line"></span> MADE FOR YOUR NEXT PROJECT</p>
-      <h1>Free Construction &amp; Home Improvement Calculators</h1>
+      <h1>Free <span class="accent-text">construction</span> &amp; home improvement calculators</h1>
       <p class="hero-lede">Get a clear estimate of the materials your project needs—so you can plan the next step with confidence.</p>
+      <ul class="trust-list"><li>Free</li><li>No sign-up</li><li>Runs in your browser</li><li>US &amp; metric</li></ul>
       <div class="hero-actions"><a class="button" routerLink="/calculators">Explore calculators <span aria-hidden="true">→</span></a><a class="text-link" routerLink="/guides">Browse material guides <span aria-hidden="true">↗</span></a></div>
     </div>
-    <div class="hero-art" aria-label="Illustration of a simple home and construction plans">
-      <div class="plan-grid"></div>
-      <div class="sun-disc"></div>
-      <div class="house-illustration"><div class="roof"></div><div class="house-body"><div class="window"></div><div class="door"></div></div><div class="house-base"></div></div>
-      <div class="measure-card"><span class="measure-icon">↗</span><span><b>Measure twice.</b><small>Plan once.</small></span><span class="measure-check">✓</span></div>
-      <div class="art-label">A good project starts with a good estimate.</div>
+    <div class="hero-art" aria-label="Collage of construction materials: concrete, paint, tile, gravel and mulch">
+      <app-material-art class="tile tile-a" data-kind="concrete" kind="concrete" />
+      <app-material-art class="tile tile-b" data-kind="paint" kind="paint" />
+      <app-material-art class="tile tile-c" data-kind="tile" kind="tile" />
+      <app-material-art class="tile tile-d" data-kind="gravel" kind="gravel" />
+      <app-material-art class="tile tile-e" data-kind="mulch" kind="mulch" />
+      <div class="measure-card"><span class="measure-icon" aria-hidden="true">✓</span><span><b>1.23 cu yd of concrete</b><small>Example: 10 × 10 ft slab, 4 in thick</small></span></div>
     </div>
   </div>
 </section>
@@ -24,7 +26,7 @@
       <div class="card-grid">
         @for (calculator of matches(); track calculator.slug) {
           <a class="calculator-card" [routerLink]="['/calculators', calculator.slug]">
-            <span class="card-icon" [attr.data-kind]="calculator.kind" aria-hidden="true">{{ iconFor(calculator.kind) }}</span>
+            <app-material-art class="card-art" [attr.data-kind]="calculator.kind" [kind]="calculator.kind" />
             <span class="card-category">{{ calculator.category }}</span><h3>{{ calculator.title }}</h3><p>{{ calculator.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
           </a>
         }

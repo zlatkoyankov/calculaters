@@ -1,10 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { MaterialArtComponent } from '../shared/material-art.component';
 import { CALCULATORS, CATEGORIES } from '../data/calculators';
 
 @Component({
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MaterialArtComponent],
   templateUrl: './directory.html',
 })
 export class DirectoryPage {
@@ -34,7 +35,4 @@ export class DirectoryPage {
     this.category.set((event.target as HTMLSelectElement).value);
   }
 
-  protected iconFor(kind: string): string {
-    return ({ gravel: 'G', paint: 'P', tile: 'T', concrete: 'C', area: 'A', mulch: 'M' } as Record<string, string>)[kind] ?? 'B';
-  }
 }
