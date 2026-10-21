@@ -1,11 +1,16 @@
 @if (calculator(); as calc) {
+  <header class="calc-hero">
+    <div class="calc-hero-bg" aria-hidden="true" [style.--hero-img]="'url(/images/' + calc.kind + '.webp)'"></div>
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><a routerLink="/calculators">Calculators</a><span aria-hidden="true">/</span><span aria-current="page">{{ calc.shortTitle }}</span></nav>
+      <section class="calculator-intro">
+        <p class="eyebrow">{{ calc.category }}</p>
+        <h1>{{ calc.title }}</h1>
+        <p>{{ calc.intro }}</p>
+      </section>
+    </div>
+  </header>
   <div class="container">
-    <nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><a routerLink="/calculators">Calculators</a><span aria-hidden="true">/</span><span aria-current="page">{{ calc.shortTitle }}</span></nav>
-    <section class="calculator-intro">
-      <p class="eyebrow">{{ calc.category }}</p>
-      <h1>{{ calc.title }}</h1>
-      <p>{{ calc.intro }}</p>
-    </section>
     <section class="calculator-layout" aria-label="{{ calc.title }} form and estimate">
       <form class="calculator-form" (ngSubmit)="calculate()">
         <div class="form-heading"><span class="step-number">01</span><div><h2>Your measurements</h2><p>Enter your project details below.</p></div></div>

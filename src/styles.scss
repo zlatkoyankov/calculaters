@@ -1141,3 +1141,29 @@ p {
 .theme-toggle:focus-visible {
   outline: 3px solid var(--focus);
 }
+
+.calc-hero {
+  position: relative;
+  isolation: isolate;
+  padding: 2.2rem 0 2.6rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.calc-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 85%, transparent) 50%, color-mix(in srgb, var(--bg) 45%, transparent) 100%),
+    linear-gradient(0deg, var(--bg) 0%, transparent 40%),
+    var(--hero-img) center / cover no-repeat;
+}
+
+.calc-hero .calculator-intro {
+  max-width: 44rem;
+}
+
+.calc-hero h1 {
+  margin: 0.2rem 0 0.6rem;
+}
